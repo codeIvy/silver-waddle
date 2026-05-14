@@ -8,7 +8,9 @@
   },
   "messages": [
     { "date": "11 October, Wednesday" },  
+    { "author": "tyler", "name": "Тайлер", "text": "камі відповідай!!!!", "time": "18:47" , "image": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Cat_November_2010-1a.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original"},
     { "author": "tyler", "audio": "./alexzavesa-calm-elegant-logo-519008.mp3", "name": "Тайлер", "text": "де ви????", "time": "18:48", "sameAuthor": true },
+    { "author": "tyler", "name": "Тайлер", "text": "де ви????", "time": "18:48", "sameAuthor": true },
     { "author": "priya", "name": "Прія", "text": "Камі, Джордан, Медді — де ви??", "time": "18:52" }
   ]
 }
