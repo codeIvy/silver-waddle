@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WhatsApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --chat-bg: #0b141a;
+    --header-bg: #1f2c33;
+    --bubble-other: #1f2c33;
+    --bubble-system: #182229;
+    --text-primary: #e9edef;
+    --text-secondary: #8696a0;
+    --text-meta: #667781;
+    --user-kamy: #f48fb1;
+    --user-jordan: #ffd54f;
+    --user-maddie: #a5d6a7;
+    --user-ada: #e0bbff;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    background: #000;
+    font-family: var(--font);
+    color: var(--text-primary);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 420px;
+    height: 100vh;
+    max-height: 900px;
+    background: var(--chat-bg);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 12px #0a0a0a,
+      0 0 0 13px #2a2a2a,
+      0 30px 80px rgba(0, 0, 0, 0.7);
+    border-radius: 38px;
+  }
+
+  @media (max-width: 480px) {
+    body { background: var(--chat-bg); }
+    .phone {
+      max-width: 100%;
+      max-height: 100%;
+      height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+
+  .notch {
+    height: 30px;
+    background: #000;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .notch::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 22px;
+    background: #000;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .status-bar {
+    background: var(--header-bg);
+    padding: 6px 22px 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .status-right {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 11px;
+  }
+
+  .battery {
+    width: 22px;
+    height: 11px;
+    border: 1px solid var(--text-primary);
+    border-radius: 2px;
+    position: relative;
+    padding: 1px;
+  }
+
+  .battery::after {
+    content: '';
+    position: absolute;
+    right: -3px;
+    top: 3px;
+    width: 2px;
+    height: 5px;
+    background: var(--text-primary);
+  }
+
+  .battery-fill {
+    background: #f87171;
+    height: 100%;
+    width: 5%;
+  }
+
+  .chat-header {
+    background: var(--header-bg);
+    padding: 10px 14px 10px 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  }
+
+  .back-arrow {
+    color: var(--text-primary);
+    font-size: 24px;
+    font-weight: 300;
+    padding: 4px 6px;
+  }
+
+  .group-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6a4c93, #ff595e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .chat-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .chat-title {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chat-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chat-actions {
+    display: flex;
+    gap: 16px;
+    color: var(--text-secondary);
+    font-size: 18px;
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 6px 12px;
+    background-color: var(--chat-bg);
+    background-image:
+      radial-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+      radial-gradient(rgba(255, 255, 255, 0.008) 1px, transparent 1px);
+    background-size: 24px 24px, 36px 36px;
+    background-position: 0 0, 12px 18px;
+  }
+
+  .messages::-webkit-scrollbar { width: 0; }
+
+  .day-divider {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0 10px;
+  }
+
+  .day-divider span {
+    background: var(--bubble-system);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 8px;
+    box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+  }
+
+  .system-msg {
+    text-align: center;
+    margin: 8px 24px;
+    padding: 6px 12px;
+    background: var(--bubble-system);
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    border-radius: 8px;
+    box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+  }
+
+  .msg {
+    display: flex;
+    margin: 1px 8px;
+  }
+
+  .msg.same-author { margin-top: 1px; margin-left: 16px; }
+  .msg:not(.same-author) { margin-top: 8px; }
+
+  .bubble {
+    background: var(--bubble-other);
+    border-radius: 8px;
+    padding: 6px 8px 6px 10px;
+    max-width: 78%;
+    box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+    position: relative;
+  }
+
+  .bubble.panic {
+    background: rgba(239, 68, 68, 0.25);
+  }
+
+  .msg:not(.same-author) .bubble::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 8px 8px 0;
+    border-color: transparent var(--bubble-other) transparent transparent;
+  }
+
+  .bubble.panic::before {
+    border-color: transparent rgba(239, 68, 68, 0.25) transparent transparent;
+  }
+
+  .author-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .author-name.kamy   { color: var(--user-kamy); }
+  .author-name.jordan { color: var(--user-jordan); }
+  .author-name.maddie { color: var(--user-maddie); }
+  .author-name.ada    { color: var(--user-ada); }
+
+  .msg-text {
+    font-size: 14.5px;
+    line-height: 1.32;
+    color: var(--text-primary);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding-right: 50px;
+    min-height: 18px;
+  }
+
+  .msg-text.ital {
+    font-style: italic;
+  }
+
+  .time {
+    position: absolute;
+    bottom: 4px;
+    right: 8px;
+    font-size: 10.5px;
+    color: var(--text-meta);
+    white-space: nowrap;
+  }
+
+  .caps {
+    font-weight: 600;
+  }
+
+  .unread-badge {
+    font-size: 11px;
+    color: #ef4444;
+    margin-top: 4px;
+  }
+
+  .input-bar {
+    background: var(--header-bg);
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .input-pill {
+    flex: 1;
+    background: var(--bubble-other);
+    border-radius: 24px;
+    padding: 10px 14px;
+    color: var(--text-meta);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .input-icon {
+    color: var(--text-secondary);
+    font-size: 20px;
+    padding: 6px;
+  }
+
+  .send-btn {
+    width: 42px;
+    height: 42px;
+    background: var(--bubble-other);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .home-indicator {
+    background: #000;
+    padding: 8px 0;
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .home-bar {
+    width: 134px;
+    height: 5px;
+    background: var(--text-primary);
+    border-radius: 3px;
+    opacity: 0.95;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="notch"></div>
+
+  <div class="status-bar">
+    <span>23:45</span>
+    <div class="status-right">
+      <span>📶</span>
+      <span style="font-size: 10px; color: #f87171;">1×</span>
+      <div class="battery"><div class="battery-fill"></div></div>
+      <span style="font-size: 10px;">5%</span>
+    </div>
+  </div>
+
+  <div class="chat-header">
+    <span class="back-arrow">‹</span>
+    <div class="group-icon">🦋</div>
+    <div class="chat-info">
+      <div class="chat-title">valdescuro trip 🍂</div>
+      <div class="chat-subtitle">Камі, Тайлер, Прія, Джордан, Медді, ти</div>
+    </div>
+    <div class="chat-actions">
+      <span>📞</span>
+      <span>⋮</span>
+    </div>
+  </div>
+
+  <div class="messages" id="messages">
+
+    <div class="day-divider"><span>18 October, Wednesday</span></div>
+
+    <div class="msg">
+      <div class="bubble panic">
+        <div class="author-name kamy">Камі</div>
+        <div class="msg-text">ТАЙЛЕР ПРІЯ ДЖОРДАН ви там?? де ви?? ми внизу у якійсь печері Ада сказала, що це дорога до capela</div>
+        <div class="time">23:12</div>
+        <div class="unread-badge">⚠ unread</div>
+      </div>
+    </div>
+
+    <div class="msg same-author">
+      <div class="bubble panic">
+        <div class="msg-text">батарея 47%, сигнал дуже слабкий. вона водить нас глибше. Джордан щось говорить про позначки на стінах</div>
+        <div class="time">23:18</div>
+        <div class="unread-badge">⚠ unread</div>
+      </div>
+    </div>
+
+    <div class="msg same-author">
+      <div class="bubble panic">
+        <div class="msg-text">СТОП. СТО‌П. ми не могли повернутись. вхід закрився. це не випадково</div>
+        <div class="time">23:24</div>
+        <div class="unread-badge">⚠ unread</div>
+      </div>
+    </div>
+
+    <div class="msg">
+      <div class="bubble panic">
+        <div class="author-name maddie">Медді</div>
+        <div class="msg-text">КАМІ ЩО ТИ КАЖЕШ</div>
+        <div class="time">23:26</div>
+        <div class="unread-badge">⚠ seen</div>
+      </div>
+    </div>
+
+    <div class="msg">
+      <div class="bubble panic">
+        <div class="author-name kamy">Камі</div>
+        <div class="msg-text">Медді вона зібрала нас сюди навмисне. Джордан... Джордан на щось подивилась і вона промовила щось ненаочне. її очі...</div>
+        <div class="time">23:29</div>
+        <div class="unread-badge">⚠ unread</div>
+      </div>
+    </div>
+
+    <div class="msg same-author">
+      <div class="bubble panic">
+        <div class="msg-text">батарея 18%. я не можу позвонити, сигнал зникає. вона стоїть напроти мене й посміхається</div>
+        <div class="time">23:31</div>
+        <div class="unread-badge">⚠ unread</div>
+      </div>
+    </div>
+
+    <div class="msg">
+      <div class="bubble panic" style="background: rgba(224, 187, 255, 0.15);">
+        <div class="author-name ada">Ада</div>
+        <div class="msg-text" style="font-style: italic;">Твій батько був дуже щедрий, Камілла. обіцяв їм усім... але тільки одна з вас справді біла тут</div>
+        <div class="time">23:33</div>
+      </div>
+    </div>
+
+    <div class="msg">
+      <div class="bubble panic">
+        <div class="author-name kamy">Камі</div>
+        <div class="msg-text">БАЙЦ ЩО? МІЙ БАТЬКО ЗНАВ ПРО ЦЕ??? ЗНАВ ПРО ЦЕ І ВІДПРАВИВ МЕНЕ СЮДИ??</div>
+        <div class="time">23:34</div>
+        <div class="unread-badge">⚠ unread</div>
+      </div>
+    </div>
+
+    <div class="msg same-author">
+      <div class="bubble panic">
+        <div class="msg-text">батарея 8%. голосовий зв'язок не працює. вона наполягає, щоб я пішла з нею далі</div>
+        <div class="time">23:36</div>
+        <div class="unread-badge">⚠ unread</div>
+      </div>
+    </div>
+
+    <div class="msg same-author">
+      <div class="bubble panic">
+        <div class="msg-text">якщо хтось це читає — я люблю вас усіх. вибачте, що я була така наївна. вибачте що —</div>
+        <div class="time">23:38</div>
+        <div class="unread-badge">⚠ unread</div>
+      </div>
+    </div>
+
+    <div class="msg">
+      <div class="bubble panic" style="background: rgba(224, 187, 255, 0.15);">
+        <div class="author-name ada">Ада</div>
+        <div class="msg-text" style="font-style: italic;">Дай мені телефон, Камілла. твій батько наказав мені быти ласкавою</div>
+        <div class="time">23:39</div>
+      </div>
+    </div>
+
+    <div class="msg">
+      <div class="bubble panic">
+        <div class="author-name kamy">Камі</div>
+        <div class="msg-text">ні. ні ні ні ні ні ні</div>
+        <div class="time">23:40</div>
+        <div class="unread-badge">⚠ unread</div>
+      </div>
+    </div>
+
+    <div style="height: 12px;"></div>
+
+  </div>
+
+  <div class="input-bar">
+    <span class="input-icon">😊</span>
+    <div class="input-pill">
+      <span style="flex: 1;">Message</span>
+      <span>📎</span>
+      <span>📷</span>
+    </div>
+    <div class="send-btn">🎤</div>
+  </div>
+
+  <div class="home-indicator">
+    <div class="home-bar"></div>
+  </div>
+
+</div>
+
+<script>
+  window.addEventListener('load', () => {
+    const m = document.getElementById('messages');
+    m.scrollTop = m.scrollHeight;
+  });
+</script>
+
+</body>
+</html>
