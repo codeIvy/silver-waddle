@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#0a0b0d">
-<title>Inicio</title>
+<meta name="theme-color" content="#15171a">
+<title>Brújula — Ruta a Cerro Pálido</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -19,14 +19,11 @@
   .device {
     width: 100%;
     height: 100%;
+    background: #15171a;
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: hidden;
-    background:
-      radial-gradient(ellipse 80% 50% at 50% 0%, #2a1b3d 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 30% 100%, #1a2e3d 0%, transparent 55%),
-      linear-gradient(180deg, #14101c 0%, #0a0b14 60%, #08060c 100%);
   }
   @media (min-width: 500px) {
     body { background: #0a0b0d; padding: 20px; }
@@ -49,8 +46,6 @@
       z-index: 100;
     }
   }
-
-  .wallpaper-stars { position: absolute; inset: 0; pointer-events: none; opacity: 0.55; z-index: 0; }
 
   .statusbar {
     height: 50px; padding: 18px 28px 0;
@@ -75,177 +70,162 @@
   }
   .battery .fill { height: 100%; width: 14%; background: #ff5252; border-radius: 1px; }
 
-  .clock {
-    text-align: center;
-    margin-top: 18px;
-    z-index: 5;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  .header {
+    padding: 8px 14px 14px;
+    flex-shrink: 0; z-index: 40;
+    background: linear-gradient(to bottom, #15171a 60%, rgba(21,23,26,0));
   }
-  .clock .date {
-    font-size: 14px; font-weight: 500;
-    letter-spacing: 0.2px;
-    color: rgba(255,255,255,0.85);
-    margin-bottom: -4px;
+  .searchbar {
+    height: 48px; background: #25282d;
+    border-radius: 24px;
+    display: flex; align-items: center;
+    padding: 0 8px 0 16px; gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
-  .clock .time {
-    font-size: 84px;
-    font-weight: 200;
-    letter-spacing: -3px;
-    line-height: 1;
-    color: #fff;
-  }
-
-  .grid {
-    flex: 1;
-    padding: 32px 22px 18px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px 14px;
-    align-content: start;
-    z-index: 5;
-  }
-
-  .app {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    text-decoration: none;
-    color: #fff;
-    position: relative;
-  }
-  .icon {
-    width: 60px; height: 60px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-    overflow: hidden;
-    position: relative;
-  }
-  .label {
-    font-size: 11px;
-    font-weight: 400;
-    text-align: center;
-    line-height: 1.1;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-    color: rgba(255,255,255,0.95);
-  }
-  .badge {
-    position: absolute;
-    top: -4px; right: 6px;
-    min-width: 20px; height: 20px;
-    border-radius: 10px;
-    background: #ff3b30;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 600;
+  .searchbar .back {
+    width: 28px; height: 28px;
     display: flex; align-items: center; justify-content: center;
-    padding: 0 6px;
-    box-shadow: 0 0 0 1.5px rgba(10,11,13,0.4);
-    z-index: 2;
+    color: #c4c7cc;
+    cursor: pointer;
+  }
+  .searchbar .field { flex: 1; min-width: 0; }
+  .searchbar .label {
+    font-size: 10px; color: #8a8f96;
+    text-transform: uppercase; letter-spacing: 0.6px;
+    margin-bottom: 1px;
+  }
+  .searchbar .dest {
+    font-size: 15px; font-weight: 500; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .searchbar .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #c85a8b, #8b3260);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    flex-shrink: 0;
   }
 
-  .icon.cam { background: linear-gradient(160deg, #4a4a4d, #1c1c1e); }
-  .icon.photos { background: #fff; }
-  .icon.notes { background: linear-gradient(180deg, #fef4c5 50%, #f5cd47 50%); }
-  .icon.mail { background: linear-gradient(180deg, #38b3f6, #1a6fc4); }
-  .icon.maps { background: linear-gradient(160deg, #2d5a3d, #1a3d2a); }
-  .icon.jade { background: linear-gradient(160deg, #1ab581, #0c7a5a); }
-  .icon.calendar { background: #fff; flex-direction: column; padding: 4px 0 0; gap: 0; }
-  .icon.weather { background: linear-gradient(180deg, #4ba3e0, #1a5a96); }
-  .icon.browser { background: linear-gradient(160deg, #5c6c84, #2a3445); }
-  .icon.files { background: linear-gradient(160deg, #2a4d8a, #15264a); }
-  .icon.translate { background: linear-gradient(160deg, #4a7bc8, #2855a0); }
-  .icon.settings { background: linear-gradient(160deg, #6c6c70, #2c2c2e); }
-  .icon.health { background: #fff; }
-  .icon.music { background: linear-gradient(160deg, #ff5e7e, #d6294f); }
-  .icon.clock { background: #1a1a1a; border: 1.5px solid #fff; }
-  .icon.calc { background: linear-gradient(180deg, #2a2a2a, #0a0a0a); }
-  .icon.phone { background: linear-gradient(160deg, #4ade80, #1a8a3a); }
-
-  .calendar-month { color: #ff3b30; font-size: 9px; font-weight: 600; line-height: 1; padding-top: 6px; }
-  .calendar-day { color: #1a1a1a; font-size: 26px; font-weight: 300; line-height: 1; margin-top: -2px; }
-
-  .clock-glyph {
-    position: relative;
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: #fff;
+  .map-wrap { flex: 1; position: relative; overflow: hidden; background: #1f2226; }
+  .map-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map-controls {
+    position: absolute; top: 12px; right: 12px;
+    display: flex; flex-direction: column; gap: 8px; z-index: 5;
   }
-  .clock-glyph::before, .clock-glyph::after {
-    content: "";
-    position: absolute;
-    background: #1a1a1a;
-    left: calc(50% - 0.75px); top: 4px;
-    width: 1.5px;
+  .ctrl {
+    width: 40px; height: 40px;
+    background: #25282d; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #c4c7cc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   }
-  .clock-glyph::before { height: 14px; transform-origin: center bottom; transform: rotate(35deg); }
-  .clock-glyph::after { height: 11px; transform-origin: center bottom; transform: rotate(-95deg); top: 7px; }
-  .clock-glyph i {
-    position: absolute;
-    left: 50%; top: 50%;
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: #ff5252;
-    transform: translate(-50%, -50%);
-    z-index: 2;
+  .ctrl.compass { color: #ea4335; }
+  .attribution {
+    position: absolute; bottom: 8px; left: 12px;
+    font-size: 9px; color: #6c7178; letter-spacing: 0.3px; z-index: 5;
   }
 
-  .dock {
-    margin: 0 16px 28px;
-    padding: 12px;
-    border-radius: 28px;
-    background: rgba(30, 30, 36, 0.55);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    z-index: 5;
-    border: 0.5px solid rgba(255,255,255,0.08);
+  .sheet {
+    background: #1d2025;
+    flex-shrink: 0;
+    border-radius: 18px 18px 0 0;
+    padding: 8px 0 14px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+    z-index: 30;
+    max-height: 44%;
+    overflow-y: auto;
   }
-  .dock .app .label { display: none; }
+  .grabber {
+    width: 36px; height: 4px;
+    background: #4a4f56; border-radius: 2px;
+    margin: 0 auto 12px;
+  }
+  .summary { padding: 0 18px 14px; border-bottom: 0.5px solid #2c2f34; }
+  .summary .eta { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .summary .time {
+    font-size: 24px; font-weight: 600; color: #4ade80;
+    letter-spacing: -0.4px;
+  }
+  .summary .duration { font-size: 14px; color: #c4c7cc; }
+  .summary .meta { font-size: 13px; color: #8a8f96; }
+  .summary .meta b { color: #c4c7cc; font-weight: 500; }
+  .summary .warning {
+    margin-top: 8px; font-size: 12px; color: #fbbc04;
+    display: flex; align-items: center; gap: 6px;
+  }
 
-  .home-indicator {
-    width: 134px; height: 5px;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.6);
-    margin: 0 auto 8px;
-    z-index: 5;
+  .actions { display: flex; gap: 8px; padding: 12px 18px 8px; }
+  .btn {
+    flex: 1; height: 44px; border-radius: 22px;
+    border: none; font-size: 15px; font-weight: 600;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; cursor: pointer;
   }
+  .btn.primary { background: #1a73e8; color: #fff; flex: 2; }
+  .btn.secondary { background: #25282d; color: #c4c7cc; }
+
+  .stops { padding: 4px 18px 0; }
+  .stops h3 {
+    font-size: 11px; font-weight: 600; color: #8a8f96;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin: 10px 0 8px;
+  }
+  .stop {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 8px 0;
+    border-bottom: 0.5px solid #25282d;
+  }
+  .stop:last-child { border-bottom: none; }
+  .stop .pin {
+    width: 22px; height: 22px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .stop .pin .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #c4c7cc;
+    box-shadow: 0 0 0 3px rgba(196,199,204,0.18);
+  }
+  .stop.start .dot { background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,0.2); }
+  .stop.end .dot { background: #ea4335; box-shadow: 0 0 0 3px rgba(234,67,53,0.22); }
+  .stop.flag .dot { background: #fbbc04; box-shadow: 0 0 0 3px rgba(251,188,4,0.22); }
+  .stop.poi .dot { background: #4a9bf0; box-shadow: 0 0 0 3px rgba(74,155,240,0.18); }
+  .stop .body { flex: 1; min-width: 0; }
+  .stop .name { font-size: 14px; font-weight: 500; color: #fff; line-height: 1.25; }
+  .stop .sub {
+    font-size: 12px; color: #8a8f96; margin-top: 2px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .stop .sub .sep { color: #4a4f56; }
+  .stop .note { margin-top: 4px; font-size: 12px; color: #fbbc04; font-style: italic; }
+  .stop .note.cool { color: #c4c7cc; }
+
+  .recents {
+    padding: 6px 18px 4px;
+    border-top: 0.5px solid #2c2f34;
+    margin-top: 4px;
+  }
+  .recents .item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid #25282d;
+  }
+  .recents .item:last-child { border-bottom: none; }
+  .recents .ico {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #2c2f34;
+    display: flex; align-items: center; justify-content: center;
+    color: #8a8f96; flex-shrink: 0;
+  }
+  .recents .item .body { flex: 1; min-width: 0; }
+  .recents .item .name { font-size: 13px; color: #c4c7cc; }
+  .recents .item .sub { font-size: 11px; color: #6c7178; margin-top: 1px; }
+  .recents .item .when { font-size: 11px; color: #6c7178; flex-shrink: 0; }
 </style>
 </head>
 <body>
 <div class="device">
-
-  <svg class="wallpaper-stars" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-    <g fill="#fff">
-      <circle cx="40" cy="120" r="0.6"/>
-      <circle cx="80" cy="200" r="0.4"/>
-      <circle cx="180" cy="90" r="0.5"/>
-      <circle cx="220" cy="160" r="0.7"/>
-      <circle cx="310" cy="110" r="0.4"/>
-      <circle cx="350" cy="220" r="0.6"/>
-      <circle cx="120" cy="280" r="0.4"/>
-      <circle cx="280" cy="50" r="0.5"/>
-      <circle cx="60" cy="60" r="0.4"/>
-      <circle cx="340" cy="60" r="0.5"/>
-      <circle cx="200" cy="240" r="0.4"/>
-      <circle cx="20" cy="180" r="0.5"/>
-      <circle cx="370" cy="160" r="0.4"/>
-      <circle cx="150" cy="180" r="0.3"/>
-      <circle cx="250" cy="260" r="0.4"/>
-      <circle cx="90" cy="320" r="0.5"/>
-      <circle cx="300" cy="290" r="0.4"/>
-      <circle cx="170" cy="320" r="0.4"/>
-    </g>
-    <path d="M 0 720 L 40 690 L 75 705 L 110 670 L 150 695 L 195 660 L 230 685 L 270 650 L 310 680 L 350 660 L 390 685 L 390 844 L 0 844 Z"
-          fill="#0a0612" opacity="0.7"/>
-    <path d="M 0 750 L 50 725 L 95 740 L 140 715 L 180 735 L 225 710 L 270 730 L 320 705 L 360 725 L 390 715 L 390 844 L 0 844 Z"
-          fill="#06040c" opacity="0.85"/>
-  </svg>
 
   <div class="statusbar">
     <span>17:32</span>
@@ -256,225 +236,367 @@
     </span>
   </div>
 
-  <div class="clock">
-    <div class="date">miércoles 13 de marzo</div>
-    <div class="time">17:32</div>
+  <div class="header">
+    <div class="searchbar">
+      <a class="back" href="../index.html" style="text-decoration: none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <div class="field">
+        <div class="label">A · 387 km · trabajo de campo</div>
+        <div class="dest">Pueblo Cerro Pálido</div>
+      </div>
+      <div class="avatar">CG</div>
+    </div>
   </div>
 
-  <div class="grid">
+  <div class="map-wrap">
+    <svg class="map-svg" viewBox="0 0 390 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#22252a" stroke-width="0.5"/>
+        </pattern>
+      </defs>
 
-    <div class="app">
-      <div class="icon cam">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-          <circle cx="12" cy="13" r="4"/>
+      <rect width="390" height="600" fill="#1f2226"/>
+      <rect width="390" height="600" fill="url(#grid)"/>
+
+      <path d="M -20 -20 L 60 -20 L 55 80 L 70 160 L 50 240 L 65 320 L 40 400 L 55 500 L 30 620 L -20 620 Z"
+            fill="#1a3046" opacity="0.95"/>
+      <path d="M 60 -20 L 55 80 L 70 160 L 50 240 L 65 320 L 40 400 L 55 500 L 30 620"
+            fill="none" stroke="#2a4866" stroke-width="0.8" opacity="0.7"/>
+
+      <ellipse cx="305" cy="155" rx="32" ry="20" fill="#1a3046" opacity="0.9"/>
+
+      <path d="M 130 30 Q 200 10, 280 40 Q 330 80, 320 140 Q 280 180, 220 170 Q 150 165, 110 130 Q 90 80, 130 30 Z"
+            fill="#1c2520" opacity="0.85"/>
+      <path d="M 80 320 Q 160 290, 250 320 Q 340 350, 380 410 Q 360 480, 290 510 Q 200 520, 130 490 Q 70 440, 60 380 Q 65 340, 80 320 Z"
+            fill="#1c2520" opacity="0.85"/>
+      <path d="M 270 230 Q 340 240, 380 280 Q 380 320, 340 340 Q 290 335, 270 290 Z"
+            fill="#1c2520" opacity="0.7"/>
+
+      <path d="M 230 440 L 250 410 L 270 440 Z M 260 450 L 285 415 L 310 450 Z M 290 460 L 315 430 L 340 460 Z"
+            fill="#2a2e33" opacity="0.6"/>
+      <path d="M 240 445 L 250 425 L 260 445 M 270 455 L 285 430 L 300 455 M 300 465 L 315 445 L 330 465"
+            fill="none" stroke="#3a3e44" stroke-width="0.7" opacity="0.7"/>
+
+      <path d="M 60 200 Q 120 220, 175 195 Q 210 180, 240 220 Q 270 260, 285 300 Q 300 340, 305 380 Q 308 420, 295 460"
+            fill="none" stroke="#2c4a6a" stroke-width="2.8" stroke-linecap="round" opacity="0.85"/>
+      <path d="M 80 380 Q 150 360, 220 350 Q 260 350, 285 300"
+            fill="none" stroke="#2c4a6a" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+
+      <g transform="translate(175,195)">
+        <path d="M -8 -6 L 8 -6 L 6 6 L -6 6 Z" fill="#2c4a6a" opacity="0.85"/>
+        <path d="M -5 -4 L -5 4 M -2 -4 L -2 4 M 1 -4 L 1 4 M 4 -4 L 4 4"
+              stroke="#85b7eb" stroke-width="0.7" opacity="0.9"/>
+        <path d="M -7 6 Q -3 8 0 6 Q 3 8 7 6" stroke="#85b7eb" stroke-width="0.6" fill="none" opacity="0.7"/>
+      </g>
+
+      <g transform="translate(335,425)">
+        <path d="M -5 -4 L 5 -4 L 4 4 L -4 4 Z" fill="#2c4a6a" opacity="0.85"/>
+        <path d="M -3 -3 L -3 3 M 0 -3 L 0 3 M 3 -3 L 3 3"
+              stroke="#85b7eb" stroke-width="0.6" opacity="0.85"/>
+      </g>
+
+      <path d="M 90 90 L 180 110 L 250 105 L 340 130" fill="none" stroke="#4a4f56" stroke-width="1.2" opacity="0.65"/>
+      <path d="M 170 280 L 220 320 L 240 380 L 215 450" fill="none" stroke="#4a4f56" stroke-width="1.2" opacity="0.6"/>
+      <path d="M 30 360 L 90 365 L 140 385" fill="none" stroke="#4a4f56" stroke-width="1.1" opacity="0.55"/>
+      <path d="M 280 50 L 295 110 L 310 155" fill="none" stroke="#4a4f56" stroke-width="1.1" opacity="0.55"/>
+      <path d="M 200 510 L 260 525 L 340 510" fill="none" stroke="#4a4f56" stroke-width="1.1" opacity="0.55"/>
+      <path d="M 260 380 L 240 420 L 230 460" fill="none" stroke="#4a4f56" stroke-width="1" opacity="0.5" stroke-dasharray="3 2"/>
+
+      <path d="M 85 65 Q 110 95, 140 125 Q 160 155, 175 195 Q 195 220, 210 240 Q 230 270, 240 300 Q 250 335, 260 380 Q 268 415, 280 440 Q 288 455, 290 460"
+            fill="none" stroke="#5c4e2c" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+
+      <path d="M 85 65 Q 60 130, 70 220 Q 80 320, 130 400 Q 180 470, 240 500 Q 280 510, 290 480 L 290 460"
+            fill="none" stroke="#5a6068" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="2 5" opacity="0.55"/>
+
+      <path d="M 85 65 Q 110 95, 140 125 Q 160 155, 175 195 Q 195 220, 210 240 Q 230 270, 240 300 Q 250 335, 260 380 Q 268 415, 280 440 Q 288 455, 290 460"
+            fill="none" stroke="#1a73e8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 85 65 Q 110 95, 140 125 Q 160 155, 175 195 Q 195 220, 210 240 Q 230 270, 240 300 Q 250 335, 260 380 Q 268 415, 280 440 Q 288 455, 290 460"
+            fill="none" stroke="#4a9bf0" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+
+      <g transform="translate(240,300)">
+        <line x1="-9" y1="-3" x2="9" y2="-3" stroke="#9aa0a6" stroke-width="1.4"/>
+        <line x1="-9" y1="3" x2="9" y2="3" stroke="#9aa0a6" stroke-width="1.4"/>
+        <line x1="-7" y1="-3" x2="-7" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
+        <line x1="0" y1="-3" x2="0" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
+        <line x1="7" y1="-3" x2="7" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
+      </g>
+
+      <g transform="translate(280,440) rotate(50)">
+        <line x1="-9" y1="-3" x2="9" y2="-3" stroke="#9aa0a6" stroke-width="1.4"/>
+        <line x1="-9" y1="3" x2="9" y2="3" stroke="#9aa0a6" stroke-width="1.4"/>
+        <line x1="-7" y1="-3" x2="-7" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
+        <line x1="0" y1="-3" x2="0" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
+        <line x1="7" y1="-3" x2="7" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
+      </g>
+
+      <circle cx="85" cy="65" r="14" fill="#2a2e33" opacity="0.7"/>
+      <circle cx="140" cy="125" r="6" fill="#2a2e33" opacity="0.7"/>
+      <circle cx="210" cy="240" r="9" fill="#2a2e33" opacity="0.7"/>
+      <circle cx="260" cy="380" r="8" fill="#2a2e33" opacity="0.75"/>
+      <circle cx="290" cy="460" r="11" fill="#2a2e33" opacity="0.75"/>
+
+      <g transform="translate(260,380)">
+        <rect x="-5" y="-1" width="3" height="3" fill="#4a4f56"/>
+        <polygon points="-5,-1 -3.5,-3 -2,-1" fill="#5a5f66"/>
+        <rect x="-1" y="0" width="3" height="3" fill="#4a4f56"/>
+        <polygon points="-1,0 0.5,-2 2,0" fill="#5a5f66"/>
+        <rect x="3" y="-1" width="3" height="3" fill="#4a4f56"/>
+        <polygon points="3,-1 4.5,-3 6,-1" fill="#5a5f66"/>
+      </g>
+
+      <g transform="translate(290,460)">
+        <rect x="-7" y="-2" width="2.5" height="2.5" fill="#4a4f56"/>
+        <rect x="-3" y="-3" width="2.5" height="3" fill="#4a4f56"/>
+        <rect x="1" y="-2" width="2.5" height="2.5" fill="#4a4f56"/>
+        <rect x="5" y="-1" width="2.5" height="2" fill="#4a4f56"/>
+        <rect x="-5" y="2" width="2.5" height="2.5" fill="#4a4f56"/>
+        <rect x="0" y="2" width="2.5" height="2" fill="#4a4f56"/>
+      </g>
+
+      <g transform="translate(295,478)">
+        <rect x="-3" y="-2" width="6" height="6" fill="#3a3e44" stroke="#6c7178" stroke-width="0.5"/>
+        <polygon points="-3,-2 0,-5 3,-2" fill="#5a5f66"/>
+        <line x1="0" y1="-7" x2="0" y2="-4" stroke="#c4c7cc" stroke-width="0.8"/>
+        <line x1="-1.2" y1="-5.5" x2="1.2" y2="-5.5" stroke="#c4c7cc" stroke-width="0.8"/>
+      </g>
+
+      <g font-family="-apple-system, Segoe UI, sans-serif" font-size="9" fill="#6c7178" font-weight="500">
+        <text x="105" y="60">PUERTO SANTIAGO</text>
+        <text x="150" y="120">San Marcos</text>
+        <text x="183" y="192" fill="#85b7eb" font-style="italic">Cataratas del Diablo</text>
+        <text x="220" y="237">Villa Reyes</text>
+        <text x="250" y="298" fill="#9aa0a6">Puente Roto</text>
+        <text x="270" y="378">Aldea San Tomás</text>
+        <text x="293" y="438" fill="#9aa0a6">Puente Viejo</text>
+        <text x="305" y="456" font-weight="600" fill="#c4c7cc">CERRO PÁLIDO</text>
+        <text x="305" y="484" fill="#9aa0a6" font-style="italic">Igl. San Rafael</text>
+        <text x="340" y="422" fill="#85b7eb" font-style="italic" font-size="8">Salto Bruja</text>
+        <text x="225" y="170" opacity="0.55">Sierra Verde</text>
+        <text x="35" y="450" opacity="0.55">Bahía Negra</text>
+        <text x="325" y="160" opacity="0.55">Laguna</text>
+      </g>
+
+      <g transform="translate(85,65)">
+        <circle r="9" fill="#15171a"/>
+        <circle r="6" fill="#4ade80"/>
+        <circle r="2.5" fill="#15171a"/>
+      </g>
+
+      <g transform="translate(140,125)"><circle r="5" fill="#1a73e8" stroke="#15171a" stroke-width="1.5"/></g>
+      <g transform="translate(175,195)"><circle r="5" fill="#4a9bf0" stroke="#15171a" stroke-width="1.5"/></g>
+      <g transform="translate(210,240)"><circle r="5" fill="#1a73e8" stroke="#15171a" stroke-width="1.5"/></g>
+      <g transform="translate(240,300)"><circle r="5" fill="#4a9bf0" stroke="#15171a" stroke-width="1.5"/></g>
+      <g transform="translate(260,380)"><circle r="5" fill="#1a73e8" stroke="#15171a" stroke-width="1.5"/></g>
+
+      <g transform="translate(280,440)">
+        <circle r="7" fill="#fbbc04" stroke="#15171a" stroke-width="1.5"/>
+        <text y="3" text-anchor="middle" font-size="9" font-weight="700" fill="#15171a">!</text>
+      </g>
+
+      <g transform="translate(290,460)">
+        <path d="M 0 -22 C -10 -22 -14 -14 -14 -8 C -14 -2 -8 6 0 16 C 8 6 14 -2 14 -8 C 14 -14 10 -22 0 -22 Z"
+              fill="#ea4335" stroke="#15171a" stroke-width="1.5"/>
+        <circle cy="-10" r="5" fill="#fff"/>
+      </g>
+
+      <g transform="translate(250,498)" opacity="0.85">
+        <circle r="4" fill="#fff" stroke="#15171a" stroke-width="1.2"/>
+      </g>
+      <text x="195" y="503" font-family="-apple-system" font-size="8" fill="#8a8f96">Mina La Esperanza</text>
+    </svg>
+
+    <div class="map-controls">
+      <div class="ctrl compass" aria-label="N">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 16 12 12 22 8 12" fill="currentColor" fill-opacity="0.4"/>
+          <text x="12" y="9" text-anchor="middle" font-size="6" font-weight="700" fill="#fff" stroke="none">N</text>
         </svg>
       </div>
-      <div class="label">Cámara</div>
-    </div>
-
-    <div class="app">
-      <div class="icon photos">
-        <svg width="38" height="38" viewBox="-12 -12 24 24">
-          <ellipse cx="0" cy="-7" rx="3" ry="5" fill="#fdd835"/>
-          <ellipse cx="0" cy="-7" rx="3" ry="5" fill="#ff5252" transform="rotate(60)"/>
-          <ellipse cx="0" cy="-7" rx="3" ry="5" fill="#ff9800" transform="rotate(120)"/>
-          <ellipse cx="0" cy="-7" rx="3" ry="5" fill="#9c27b0" transform="rotate(180)"/>
-          <ellipse cx="0" cy="-7" rx="3" ry="5" fill="#2196f3" transform="rotate(240)"/>
-          <ellipse cx="0" cy="-7" rx="3" ry="5" fill="#4caf50" transform="rotate(300)"/>
-          <circle r="2.8" fill="#fff"/>
-        </svg>
-      </div>
-      <div class="label">Fotos</div>
-    </div>
-
-    <div class="app">
-      <div class="icon notes">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7a5a0a" stroke-width="1.4" stroke-linecap="round">
-          <line x1="6" y1="9" x2="18" y2="9"/>
-          <line x1="6" y1="13" x2="18" y2="13"/>
-          <line x1="6" y1="17" x2="14" y2="17"/>
-        </svg>
-      </div>
-      <div class="label">Notas</div>
-    </div>
-
-    <div class="app">
-      <div class="icon mail">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" stroke="none">
-          <path d="M3 6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v1.2l-9 5.4-9-5.4z"/>
-          <path d="M3 9.3v8.7a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9.3l-9 5.4z"/>
-        </svg>
-      </div>
-      <div class="label">Mail</div>
-    </div>
-
-    <a class="app" href="maps/index.html">
-      <div class="icon maps">
-        <svg width="42" height="42" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-          <path d="M 4 30 L 14 26 L 26 30 L 36 26 L 36 36 L 26 40 L 14 36 L 4 40 Z" fill="#4a8062" opacity="0.85"/>
-          <path d="M 4 30 L 14 26 M 14 26 L 14 36 M 26 30 L 26 40 M 14 26 L 26 30 L 36 26"
-                stroke="#1d3a2a" stroke-width="0.7" fill="none" opacity="0.9"/>
-          <g transform="translate(20,17)">
-            <path d="M -7 -2 Q -4 -7 2 -7 Q 8 -7 11 -2 Q 11 3 6 4 L 2 4 L -2 7 L -1 3 Q -7 2 -7 -2 Z"
-                  fill="#fff"/>
-            <circle cx="6" cy="-3" r="0.9" fill="#1d3a2a"/>
-            <path d="M 11 -2 Q 13 -3 14 -1" fill="none" stroke="#fff" stroke-width="0.8"/>
-          </g>
-        </svg>
-      </div>
-      <div class="label">Pigeon Maps</div>
-    </a>
-
-    <a class="app" href="chats/index.html">
-      <div class="icon jade">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff">
-          <path d="M12 3C6.48 3 2 6.86 2 11.5c0 2.4 1.2 4.55 3.1 6.05L4 22l4.7-2.1c1.05.3 2.15.5 3.3.5 5.52 0 10-3.86 10-8.5S17.52 3 12 3z"/>
-        </svg>
-      </div>
-      <div class="badge">3</div>
-      <div class="label">Jade</div>
-    </a>
-
-    <div class="app">
-      <div class="icon calendar">
-        <div class="calendar-month">MIÉ</div>
-        <div class="calendar-day">13</div>
-      </div>
-      <div class="label">Calendario</div>
-    </div>
-
-    <div class="app">
-      <div class="icon weather">
-        <svg width="34" height="34" viewBox="0 0 24 24">
-          <circle cx="9" cy="9" r="4" fill="#ffd54f"/>
-          <path d="M16 11a4 4 0 0 0-3.8 2.8A3.5 3.5 0 0 0 5.5 18h11a3.5 3.5 0 0 0 0-7z" fill="#fff"/>
-        </svg>
-      </div>
-      <div class="label">Tiempo</div>
-    </div>
-
-    <div class="app">
-      <div class="icon browser">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3 12h18"/>
-        </svg>
-      </div>
-      <div class="label">Safari</div>
-    </div>
-
-    <div class="app">
-      <div class="icon files">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff">
-          <path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-        </svg>
-      </div>
-      <div class="label">Archivos</div>
-    </div>
-
-    <div class="app">
-      <div class="icon translate">
-        <svg width="30" height="30" viewBox="0 0 24 24">
-          <text x="2" y="11" font-size="10" font-weight="700" font-family="serif" fill="#fff">あ</text>
-          <text x="13" y="20" font-size="10" font-weight="700" font-family="serif" fill="#fff">A</text>
-          <line x1="2" y1="13" x2="11" y2="13" stroke="#fff" stroke-width="0.8"/>
-        </svg>
-      </div>
-      <div class="label">Traducir</div>
-    </div>
-
-    <div class="app">
-      <div class="icon settings">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4">
+      <div class="ctrl">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          <path d="M12 2v3M12 19v3M22 12h-3M5 12H2"/>
         </svg>
       </div>
-      <div class="label">Ajustes</div>
-    </div>
-
-    <div class="app">
-      <div class="icon health">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="#ff3b3b">
-          <path d="M12 21s-7-4.5-9.5-9C1 8 3 4 7 4c2 0 3.5 1 5 2.5C13.5 5 15 4 17 4c4 0 6 4 4.5 8-2.5 4.5-9.5 9-9.5 9z"/>
+      <div class="ctrl">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+          <polyline points="2 17 12 22 22 17"/>
+          <polyline points="2 12 12 17 22 12"/>
         </svg>
       </div>
-      <div class="label">Salud</div>
     </div>
 
-    <div class="app">
-      <div class="icon music">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5">
-          <path d="M9 18V5l12-2v13"/>
-          <circle cx="6" cy="18" r="3" fill="#fff"/>
-          <circle cx="18" cy="16" r="3" fill="#fff"/>
-        </svg>
-      </div>
-      <div class="label">Música</div>
-    </div>
-
-    <div class="app">
-      <div class="icon clock">
-        <div class="clock-glyph"><i></i></div>
-      </div>
-      <div class="label">Reloj</div>
-    </div>
-
-    <div class="app">
-      <div class="icon calc">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4">
-          <rect x="4" y="3" width="16" height="18" rx="2"/>
-          <line x1="8" y1="9" x2="16" y2="9"/>
-          <circle cx="9" cy="13" r="0.6" fill="#fff"/>
-          <circle cx="12" cy="13" r="0.6" fill="#fff"/>
-          <circle cx="15" cy="13" r="0.6" fill="#fff"/>
-          <circle cx="9" cy="16" r="0.6" fill="#fff"/>
-          <circle cx="12" cy="16" r="0.6" fill="#fff"/>
-          <circle cx="15" cy="16" r="0.6" fill="#ff9500"/>
-        </svg>
-      </div>
-      <div class="label">Calc.</div>
-    </div>
-
+    <div class="attribution">© Brújula · OSM · sin conexión</div>
   </div>
 
-  <div class="dock">
-    <div class="app">
-      <div class="icon phone">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/>
-        </svg>
+  <div class="sheet">
+    <div class="grabber"></div>
+
+    <div class="summary">
+      <div class="eta">
+        <span class="time">16:42</span>
+        <span class="duration">· 1 día 4 h</span>
+      </div>
+      <div class="meta">387 km · vía Carr. <b>Federal 17</b> y Camino <b>El Tigre</b></div>
+      <div class="warning">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 1 21h22L12 2zm0 6 7.5 13h-15L12 8zm-1 4v4h2v-4h-2zm0 5v2h2v-2h-2z"/></svg>
+        Zona sin cobertura desde km 280 · Camino sin pavimentar tras Puente Viejo
       </div>
     </div>
-    <div class="app">
-      <div class="icon mail">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff">
-          <path d="M3 6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v1.2l-9 5.4-9-5.4z"/>
-          <path d="M3 9.3v8.7a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9.3l-9 5.4z"/>
-        </svg>
+
+    <div class="stops">
+      <h3>Itinerario · trabajo de campo Geo-204</h3>
+
+      <div class="stop start">
+        <div class="pin"><span class="dot"></span></div>
+        <div class="body">
+          <div class="name">Hostal Universitario, Puerto Santiago</div>
+          <div class="sub"><span>Salida</span><span class="sep">·</span><span>mar 06:45</span><span class="sep">·</span><span>grupo Geo-204 (8 personas)</span></div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="pin"><span class="dot"></span></div>
+        <div class="body">
+          <div class="name">Gasolinera El Cóndor, San Marcos</div>
+          <div class="sub"><span>09:14</span><span class="sep">·</span><span>combustible + desayuno</span></div>
+          <div class="note cool">"empanada de pollo $1.20 me cambia la vida"</div>
+        </div>
+      </div>
+
+      <div class="stop poi">
+        <div class="pin"><span class="dot"></span></div>
+        <div class="body">
+          <div class="name">Cataratas del Diablo</div>
+          <div class="sub"><span>mar 12:30</span><span class="sep">·</span><span>parada turística</span><span class="sep">·</span><span>40 min</span></div>
+          <div class="note cool">"47 fotos!! Prof. Acosta found iron oxide veins in the basalt — examen material fr"</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="pin"><span class="dot"></span></div>
+        <div class="body">
+          <div class="name">Hostal La Quinta, Villa Reyes</div>
+          <div class="sub"><span>llegada mar 19:40</span><span class="sep">·</span><span>noche</span></div>
+          <div class="note cool">"wifi pésimo pero la dueña hace flan ❤"</div>
+        </div>
+      </div>
+
+      <div class="stop poi">
+        <div class="pin"><span class="dot"></span></div>
+        <div class="body">
+          <div class="name">Puente Roto</div>
+          <div class="sub"><span>mié 10:55</span><span class="sep">·</span><span>cruce Río Toro</span></div>
+          <div class="note cool">"no miré abajo. 0/10 stars. Diego almost threw up"</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="pin"><span class="dot"></span></div>
+        <div class="body">
+          <div class="name">Aldea San Tomás</div>
+          <div class="sub"><span>mié 13:20</span><span class="sep">·</span><span>almuerzo</span><span class="sep">·</span><span>~60 habitantes</span></div>
+          <div class="note">"weird vibes. everyone STARED at prof. nobody would speak Spanish to us. quechua? something else? Marta said she heard them call us 'forasteros' which fine ok but the way they said it"</div>
+        </div>
+      </div>
+
+      <div class="stop flag">
+        <div class="pin"><span class="dot"></span></div>
+        <div class="body">
+          <div class="name">Puente Viejo</div>
+          <div class="sub"><span>mié 14:45</span><span class="sep">·</span><span>cruce Quebrada Negra</span></div>
+          <div class="note">"viejito en San Tomás said don't cross after dark. said 'ellos cantan' — they sing?? what sings??"</div>
+        </div>
+      </div>
+
+      <div class="stop end">
+        <div class="pin"><span class="dot"></span></div>
+        <div class="body">
+          <div class="name">Pueblo Cerro Pálido</div>
+          <div class="sub"><span>llegada mié 16:42</span><span class="sep">·</span><span>sitio de campo</span></div>
+          <div class="note cool">"prof tiene reunión con capataz de mina jue 10:00. yo libre hasta entonces — quiero ver la iglesia, Marta quiere ir conmigo"</div>
+        </div>
+      </div>
+
+      <div class="stop poi">
+        <div class="pin"><span class="dot"></span></div>
+        <div class="body">
+          <div class="name">Iglesia de San Rafael</div>
+          <div class="sub"><span>POI guardado</span><span class="sep">·</span><span>colonial s. XVIII</span></div>
+          <div class="note cool">"frescos originales supuestamente — Wikipedia dice cerrada al público hace 4 años, ¿por qué??"</div>
+        </div>
+      </div>
+
+      <h3>Búsquedas recientes</h3>
+    </div>
+
+    <div class="recents">
+      <div class="item">
+        <div class="ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <div class="body">
+          <div class="name">Mina La Esperanza, Cerro Pálido</div>
+          <div class="sub">12 km al sur del pueblo · operación suspendida 2019</div>
+        </div>
+        <div class="when">hace 2 días</div>
+      </div>
+      <div class="item">
+        <div class="ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <div class="body">
+          <div class="name">"yawar" en quechua qué significa</div>
+          <div class="sub">traducción · sin conexión</div>
+        </div>
+        <div class="when">hace 2 días</div>
+      </div>
+      <div class="item">
+        <div class="ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <div class="body">
+          <div class="name">Salto de la Bruja — sendero</div>
+          <div class="sub">cascada secundaria · 6 km E de Cerro Pálido</div>
+        </div>
+        <div class="when">hace 2 días</div>
+      </div>
+      <div class="item">
+        <div class="ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <div class="body">
+          <div class="name">Iglesia San Rafael Cerro Pálido cerrada por qué</div>
+          <div class="sub">3 resultados · sin conexión</div>
+        </div>
+        <div class="when">hace 3 días</div>
+      </div>
+      <div class="item">
+        <div class="ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <div class="body">
+          <div class="name">US Embassy Puerto Santiago number</div>
+          <div class="sub">Av. Bolívar 1180 · +1 emergencia</div>
+        </div>
+        <div class="when">hace 6 días</div>
       </div>
     </div>
-    <div class="app">
-      <div class="icon browser">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3 12h18"/>
-        </svg>
-      </div>
-    </div>
-    <div class="app">
-      <div class="icon music">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5">
-          <path d="M9 18V5l12-2v13"/>
-          <circle cx="6" cy="18" r="3" fill="#fff"/>
-          <circle cx="18" cy="16" r="3" fill="#fff"/>
-        </svg>
-      </div>
+
+    <div class="actions">
+      <button class="btn secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Salir
+      </button>
+      <button class="btn primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+        Iniciar ruta
+      </button>
     </div>
   </div>
-
-  <div class="home-indicator"></div>
 
 </div>
 </body>
