@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#15171a">
-<title>Brújula — Ruta a Cerro Pálido</title>
+<title>Компас — Маршрут до Серро Пальдо</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -242,8 +242,8 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </a>
       <div class="field">
-        <div class="label">A · 387 km · trabajo de campo</div>
-        <div class="dest">Pueblo Cerro Pálido</div>
+        <div class="label">A · 387 км · польова робота</div>
+        <div class="dest">Серро Пальдо</div>
       </div>
       <div class="avatar">CG</div>
     </div>
@@ -253,158 +253,240 @@
     <svg class="map-svg" viewBox="0 0 390 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#22252a" stroke-width="0.5"/>
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c1f23" stroke-width="0.4"/>
+        </pattern>
+        <pattern id="forest" width="12" height="12" patternUnits="userSpaceOnUse">
+          <circle cx="6" cy="6" r="2.5" fill="#1e3a2a" opacity="0.7"/>
+          <circle cx="0" cy="0" r="1.5" fill="#1a3325" opacity="0.5"/>
+          <circle cx="12" cy="0" r="1.5" fill="#1a3325" opacity="0.5"/>
+          <circle cx="0" cy="12" r="1.5" fill="#1a3325" opacity="0.5"/>
+          <circle cx="12" cy="12" r="1.5" fill="#1a3325" opacity="0.5"/>
+        </pattern>
+        <pattern id="dense-forest" width="8" height="8" patternUnits="userSpaceOnUse">
+          <circle cx="4" cy="4" r="2.2" fill="#162e1e" opacity="0.9"/>
+          <circle cx="0" cy="0" r="1.2" fill="#122518" opacity="0.6"/>
+          <circle cx="8" cy="8" r="1.2" fill="#122518" opacity="0.6"/>
+        </pattern>
+        <pattern id="water-ripple" width="20" height="6" patternUnits="userSpaceOnUse">
+          <path d="M 0 3 Q 5 1 10 3 Q 15 5 20 3" fill="none" stroke="#2a5a7a" stroke-width="0.5" opacity="0.5"/>
         </pattern>
       </defs>
 
-      <rect width="390" height="600" fill="#1f2226"/>
-      <rect width="390" height="600" fill="url(#grid)"/>
+      <!-- Sea base -->
+      <rect width="390" height="600" fill="#0d1a24"/>
+      <!-- Land mass -->
+      <path d="M 40 0 L 390 0 L 390 600 L 0 600 L 0 200 Q 20 150 40 0 Z" fill="#1a2118"/>
+      <!-- Grid overlay -->
+      <rect width="390" height="600" fill="url(#grid)" opacity="0.5"/>
 
-      <path d="M -20 -20 L 60 -20 L 55 80 L 70 160 L 50 240 L 65 320 L 40 400 L 55 500 L 30 620 L -20 620 Z"
-            fill="#1a3046" opacity="0.95"/>
-      <path d="M 60 -20 L 55 80 L 70 160 L 50 240 L 65 320 L 40 400 L 55 500 L 30 620"
-            fill="none" stroke="#2a4866" stroke-width="0.8" opacity="0.7"/>
+      <!-- === BAY / OCEAN === -->
+      <path d="M 0 0 L 40 0 Q 30 80 20 160 Q 10 240 0 280 Z" fill="#0d1a24"/>
+      <path d="M 0 0 L 85 0 L 95 45 Q 80 55 65 50 Q 45 40 20 55 Q 5 65 0 80 Z" fill="#0e1e2e"/>
+      <path d="M 5 20 Q 30 15 55 25 Q 70 30 80 40" fill="none" stroke="#1a3a50" stroke-width="0.8" opacity="0.6"/>
+      <path d="M 3 35 Q 25 28 50 38 Q 65 44 78 52" fill="none" stroke="#1a3a50" stroke-width="0.6" opacity="0.5"/>
+      <!-- Bahía Negra -->
+      <path d="M 0 380 Q 20 360 50 370 Q 70 380 80 420 Q 75 480 50 520 Q 20 540 0 530 Z" fill="#0d1824"/>
+      <path d="M 5 400 Q 30 390 55 405" fill="none" stroke="#1a3040" stroke-width="0.7" opacity="0.5"/>
+      <path d="M 5 425 Q 35 412 60 428" fill="none" stroke="#1a3040" stroke-width="0.6" opacity="0.4"/>
+      <path d="M 5 450 Q 30 440 52 453" fill="none" stroke="#1a3040" stroke-width="0.5" opacity="0.35"/>
 
-      <ellipse cx="305" cy="155" rx="32" ry="20" fill="#1a3046" opacity="0.9"/>
+      <!-- === SIERRA VERDE — mountain massif === -->
+      <path d="M 110 0 Q 160 20 200 50 Q 250 30 310 60 Q 360 90 380 140 Q 360 200 310 210 Q 260 220 210 200 Q 160 185 130 160 Q 95 130 90 80 Q 95 40 110 0 Z"
+            fill="#1e3028" opacity="0.92"/>
+      <path d="M 110 0 Q 160 20 200 50 Q 250 30 310 60 Q 360 90 380 140 Q 360 200 310 210 Q 260 220 210 200 Q 160 185 130 160 Q 95 130 90 80 Q 95 40 110 0 Z"
+            fill="url(#dense-forest)" opacity="0.85"/>
+      <!-- Contour rings -->
+      <path d="M 130 30 Q 170 15 210 25 Q 260 35 300 65 Q 340 95 350 130" fill="none" stroke="#2a4535" stroke-width="0.8" opacity="0.55"/>
+      <path d="M 135 55 Q 175 40 215 50 Q 255 60 292 84 Q 328 112 338 145" fill="none" stroke="#2a4535" stroke-width="0.6" opacity="0.45"/>
+      <path d="M 140 78 Q 180 66 218 74 Q 252 82 282 104 Q 312 128 320 158" fill="none" stroke="#2a4535" stroke-width="0.5" opacity="0.35"/>
+      <!-- Mountain peaks (bare rock) -->
+      <path d="M 180 30 L 195 8 L 210 30 Z" fill="#2e3e35" opacity="0.8"/>
+      <path d="M 242 42 L 260 16 L 277 42 Z" fill="#2e3e35" opacity="0.75"/>
+      <path d="M 296 68 L 312 46 L 328 68 Z" fill="#2e3e35" opacity="0.7"/>
+      <!-- Snow caps -->
+      <path d="M 188 24 L 195 10 L 202 24 Z" fill="#d0ddd6" opacity="0.65"/>
+      <path d="M 251 35 L 260 19 L 268 35 Z" fill="#d0ddd6" opacity="0.55"/>
+      <path d="M 304 62 L 312 48 L 319 62 Z" fill="#d0ddd6" opacity="0.5"/>
 
-      <path d="M 130 30 Q 200 10, 280 40 Q 330 80, 320 140 Q 280 180, 220 170 Q 150 165, 110 130 Q 90 80, 130 30 Z"
-            fill="#1c2520" opacity="0.85"/>
-      <path d="M 80 320 Q 160 290, 250 320 Q 340 350, 380 410 Q 360 480, 290 510 Q 200 520, 130 490 Q 70 440, 60 380 Q 65 340, 80 320 Z"
-            fill="#1c2520" opacity="0.85"/>
-      <path d="M 270 230 Q 340 240, 380 280 Q 380 320, 340 340 Q 290 335, 270 290 Z"
-            fill="#1c2520" opacity="0.7"/>
+      <!-- === SOUTH FOREST (Aldea / Cerro Pálido region) === -->
+      <path d="M 80 330 Q 160 300 260 330 Q 340 360 382 422 Q 372 502 302 530 Q 222 552 152 522 Q 80 492 60 432 Q 55 376 80 330 Z"
+            fill="#1a2d1e" opacity="0.9"/>
+      <path d="M 80 330 Q 160 300 260 330 Q 340 360 382 422 Q 372 502 302 530 Q 222 552 152 522 Q 80 492 60 432 Q 55 376 80 330 Z"
+            fill="url(#forest)" opacity="0.75"/>
+      <!-- Contour ridges -->
+      <path d="M 90 362 Q 170 338 262 360 Q 332 380 366 418" fill="none" stroke="#244030" stroke-width="0.7" opacity="0.5"/>
+      <path d="M 96 392 Q 175 372 264 390 Q 328 408 358 440" fill="none" stroke="#244030" stroke-width="0.6" opacity="0.4"/>
+      <path d="M 102 422 Q 182 404 266 422 Q 320 438 348 464" fill="none" stroke="#244030" stroke-width="0.5" opacity="0.3"/>
+      <!-- Eastern rocky outcrop -->
+      <path d="M 265 240 Q 342 252 386 292 Q 388 332 350 348 Q 295 346 268 302 Z" fill="#1e2820" opacity="0.75"/>
+      <path d="M 280 262 Q 322 268 356 288" fill="none" stroke="#2a3528" stroke-width="0.7" opacity="0.5"/>
+      <path d="M 276 284 Q 320 288 352 308" fill="none" stroke="#2a3528" stroke-width="0.6" opacity="0.4"/>
 
-      <path d="M 230 440 L 250 410 L 270 440 Z M 260 450 L 285 415 L 310 450 Z M 290 460 L 315 430 L 340 460 Z"
-            fill="#2a2e33" opacity="0.6"/>
-      <path d="M 240 445 L 250 425 L 260 445 M 270 455 L 285 430 L 300 455 M 300 465 L 315 445 L 330 465"
-            fill="none" stroke="#3a3e44" stroke-width="0.7" opacity="0.7"/>
+      <!-- === LAKES === -->
+      <!-- Laguna (glacial lake, top right) -->
+      <ellipse cx="332" cy="158" rx="40" ry="24" fill="#0f2535" opacity="0.96"/>
+      <ellipse cx="332" cy="158" rx="40" ry="24" fill="url(#water-ripple)"/>
+      <path d="M 300 152 Q 316 147 332 152 Q 348 157 362 152" fill="none" stroke="#2a6a90" stroke-width="0.9" opacity="0.7"/>
+      <path d="M 304 161 Q 320 157 336 161 Q 350 165 360 161" fill="none" stroke="#2a6a90" stroke-width="0.6" opacity="0.5"/>
+      <ellipse cx="320" cy="151" rx="14" ry="6" fill="#1a4a65" opacity="0.35"/>
+      <!-- Small lake near Cerro Pálido -->
+      <ellipse cx="220" cy="492" rx="20" ry="11" fill="#0f2230" opacity="0.92"/>
+      <path d="M 204 490 Q 214 486 224 490 Q 232 494 240 490" fill="none" stroke="#1a4055" stroke-width="0.6" opacity="0.6"/>
 
-      <path d="M 60 200 Q 120 220, 175 195 Q 210 180, 240 220 Q 270 260, 285 300 Q 300 340, 305 380 Q 308 420, 295 460"
-            fill="none" stroke="#2c4a6a" stroke-width="2.8" stroke-linecap="round" opacity="0.85"/>
-      <path d="M 80 380 Q 150 360, 220 350 Q 260 350, 285 300"
-            fill="none" stroke="#2c4a6a" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+      <!-- === RIVERS === -->
+      <!-- Río Toro (main river from lake) -->
+      <path d="M 322 162 Q 296 178 276 215 Q 258 248 250 288 Q 242 324 240 358 Q 238 384 242 412"
+            fill="none" stroke="#1a3a55" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+      <path d="M 322 162 Q 296 178 276 215 Q 258 248 250 288 Q 242 324 240 358 Q 238 384 242 412"
+            fill="none" stroke="#2a5a7a" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
+      <!-- Quebrada Negra -->
+      <path d="M 240 358 Q 262 368 282 384 Q 302 400 312 424"
+            fill="none" stroke="#1a3045" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+      <path d="M 240 358 Q 262 368 282 384 Q 302 400 312 424"
+            fill="none" stroke="#2a4a65" stroke-width="0.9" stroke-linecap="round" opacity="0.5"/>
+      <!-- Stream near waterfall -->
+      <path d="M 164 148 Q 173 172 175 195 Q 173 212 170 232"
+            fill="none" stroke="#1a3a55" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
 
-      <g transform="translate(175,195)">
-        <path d="M -8 -6 L 8 -6 L 6 6 L -6 6 Z" fill="#2c4a6a" opacity="0.85"/>
-        <path d="M -5 -4 L -5 4 M -2 -4 L -2 4 M 1 -4 L 1 4 M 4 -4 L 4 4"
-              stroke="#85b7eb" stroke-width="0.7" opacity="0.9"/>
-        <path d="M -7 6 Q -3 8 0 6 Q 3 8 7 6" stroke="#85b7eb" stroke-width="0.6" fill="none" opacity="0.7"/>
-      </g>
+      <!-- Waterfall (Cataratas del Diablo) -->
+      <line x1="168" y1="184" x2="167" y2="200" stroke="#5ab5ff" stroke-width="1.3" opacity="0.9"/>
+      <line x1="173" y1="182" x2="172" y2="198" stroke="#5ab5ff" stroke-width="1.3" opacity="0.9"/>
+      <line x1="178" y1="184" x2="177" y2="200" stroke="#5ab5ff" stroke-width="1.3" opacity="0.9"/>
+      <path d="M 165 200 Q 173 205 181 200" fill="none" stroke="#3a8acc" stroke-width="1.1" opacity="0.8"/>
+      <!-- Salto Bruja (small waterfall E) -->
+      <line x1="346" y1="415" x2="345" y2="427" stroke="#5ab5ff" stroke-width="1" opacity="0.65"/>
+      <line x1="350" y1="413" x2="349" y2="425" stroke="#5ab5ff" stroke-width="1" opacity="0.65"/>
 
-      <g transform="translate(335,425)">
-        <path d="M -5 -4 L 5 -4 L 4 4 L -4 4 Z" fill="#2c4a6a" opacity="0.85"/>
-        <path d="M -3 -3 L -3 3 M 0 -3 L 0 3 M 3 -3 L 3 3"
-              stroke="#85b7eb" stroke-width="0.6" opacity="0.85"/>
-      </g>
+      <!-- === ROADS === -->
+      <!-- Secondary roads -->
+      <path d="M 90 90 L 155 108 L 230 100 L 312 128 L 352 162" fill="none" stroke="#2a2e34" stroke-width="2" opacity="0.8"/>
+      <path d="M 170 285 L 222 326 L 246 386 L 220 456" fill="none" stroke="#2a2e34" stroke-width="1.5" opacity="0.65"/>
+      <path d="M 30 366 L 92 370 L 146 390" fill="none" stroke="#2a2e34" stroke-width="1.5" opacity="0.6"/>
+      <path d="M 282 52 L 296 108 L 313 156" fill="none" stroke="#2a2e34" stroke-width="1.5" opacity="0.6"/>
+      <path d="M 192 508 L 256 522 L 342 508" fill="none" stroke="#2a2e34" stroke-width="1.3" opacity="0.55"/>
+      <!-- Dirt track (dashed) -->
+      <path d="M 260 384 Q 246 420 236 460" fill="none" stroke="#3a3e44" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.5"/>
 
-      <path d="M 90 90 L 180 110 L 250 105 L 340 130" fill="none" stroke="#4a4f56" stroke-width="1.2" opacity="0.65"/>
-      <path d="M 170 280 L 220 320 L 240 380 L 215 450" fill="none" stroke="#4a4f56" stroke-width="1.2" opacity="0.6"/>
-      <path d="M 30 360 L 90 365 L 140 385" fill="none" stroke="#4a4f56" stroke-width="1.1" opacity="0.55"/>
-      <path d="M 280 50 L 295 110 L 310 155" fill="none" stroke="#4a4f56" stroke-width="1.1" opacity="0.55"/>
-      <path d="M 200 510 L 260 525 L 340 510" fill="none" stroke="#4a4f56" stroke-width="1.1" opacity="0.55"/>
-      <path d="M 260 380 L 240 420 L 230 460" fill="none" stroke="#4a4f56" stroke-width="1" opacity="0.5" stroke-dasharray="3 2"/>
+      <!-- Route shadow -->
+      <path d="M 85 65 Q 110 95 140 125 Q 160 155 175 195 Q 195 220 210 240 Q 230 270 240 300 Q 250 335 260 380 Q 268 415 280 440 Q 288 455 290 460"
+            fill="none" stroke="#060a10" stroke-width="10" stroke-linecap="round" opacity="0.4"/>
+      <!-- Alt route -->
+      <path d="M 85 65 Q 60 130 70 220 Q 80 320 130 400 Q 180 470 240 500 Q 280 510 290 480 L 290 460"
+            fill="none" stroke="#3a4550" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 6" opacity="0.4"/>
+      <!-- Active route -->
+      <path d="M 85 65 Q 110 95 140 125 Q 160 155 175 195 Q 195 220 210 240 Q 230 270 240 300 Q 250 335 260 380 Q 268 415 280 440 Q 288 455 290 460"
+            fill="none" stroke="#1558cc" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 85 65 Q 110 95 140 125 Q 160 155 175 195 Q 195 220 210 240 Q 230 270 240 300 Q 250 335 260 380 Q 268 415 280 440 Q 288 455 290 460"
+            fill="none" stroke="#60b0ff" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
 
-      <path d="M 85 65 Q 110 95, 140 125 Q 160 155, 175 195 Q 195 220, 210 240 Q 230 270, 240 300 Q 250 335, 260 380 Q 268 415, 280 440 Q 288 455, 290 460"
-            fill="none" stroke="#5c4e2c" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
-
-      <path d="M 85 65 Q 60 130, 70 220 Q 80 320, 130 400 Q 180 470, 240 500 Q 280 510, 290 480 L 290 460"
-            fill="none" stroke="#5a6068" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="2 5" opacity="0.55"/>
-
-      <path d="M 85 65 Q 110 95, 140 125 Q 160 155, 175 195 Q 195 220, 210 240 Q 230 270, 240 300 Q 250 335, 260 380 Q 268 415, 280 440 Q 288 455, 290 460"
-            fill="none" stroke="#1a73e8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 85 65 Q 110 95, 140 125 Q 160 155, 175 195 Q 195 220, 210 240 Q 230 270, 240 300 Q 250 335, 260 380 Q 268 415, 280 440 Q 288 455, 290 460"
-            fill="none" stroke="#4a9bf0" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-
+      <!-- === BRIDGES === -->
+      <!-- Puente Roto -->
       <g transform="translate(240,300)">
-        <line x1="-9" y1="-3" x2="9" y2="-3" stroke="#9aa0a6" stroke-width="1.4"/>
-        <line x1="-9" y1="3" x2="9" y2="3" stroke="#9aa0a6" stroke-width="1.4"/>
-        <line x1="-7" y1="-3" x2="-7" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
-        <line x1="0" y1="-3" x2="0" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
-        <line x1="7" y1="-3" x2="7" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
+        <rect x="-11" y="-3" width="22" height="6" fill="#3a3e44" rx="1"/>
+        <line x1="-9" y1="-3" x2="-9" y2="3" stroke="#5a6070" stroke-width="0.8"/>
+        <line x1="0" y1="-3" x2="0" y2="3" stroke="#5a6070" stroke-width="0.8"/>
+        <line x1="9" y1="-3" x2="9" y2="3" stroke="#5a6070" stroke-width="0.8"/>
+        <line x1="-11" y1="0" x2="-16" y2="-5" stroke="#9aa0a6" stroke-width="0.8"/>
+        <line x1="11" y1="0" x2="16" y2="-5" stroke="#9aa0a6" stroke-width="0.8"/>
+      </g>
+      <!-- Puente Viejo -->
+      <g transform="translate(280,440) rotate(42)">
+        <rect x="-10" y="-2.5" width="20" height="5" fill="#3a3e44" rx="1"/>
+        <line x1="-8" y1="-2.5" x2="-8" y2="2.5" stroke="#5a6070" stroke-width="0.7"/>
+        <line x1="0" y1="-2.5" x2="0" y2="2.5" stroke="#5a6070" stroke-width="0.7"/>
+        <line x1="8" y1="-2.5" x2="8" y2="2.5" stroke="#5a6070" stroke-width="0.7"/>
       </g>
 
-      <g transform="translate(280,440) rotate(50)">
-        <line x1="-9" y1="-3" x2="9" y2="-3" stroke="#9aa0a6" stroke-width="1.4"/>
-        <line x1="-9" y1="3" x2="9" y2="3" stroke="#9aa0a6" stroke-width="1.4"/>
-        <line x1="-7" y1="-3" x2="-7" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
-        <line x1="0" y1="-3" x2="0" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
-        <line x1="7" y1="-3" x2="7" y2="3" stroke="#9aa0a6" stroke-width="0.7"/>
+      <!-- === TOWN GLOWS === -->
+      <circle cx="85" cy="65" r="22" fill="#182a3a" opacity="0.45"/>
+      <circle cx="140" cy="125" r="11" fill="#182030" opacity="0.4"/>
+      <circle cx="175" cy="195" r="9" fill="#182030" opacity="0.35"/>
+      <circle cx="210" cy="240" r="13" fill="#182030" opacity="0.4"/>
+      <circle cx="260" cy="380" r="10" fill="#182030" opacity="0.4"/>
+      <circle cx="290" cy="460" r="18" fill="#182030" opacity="0.5"/>
+
+      <!-- === SETTLEMENT BLOCKS === -->
+      <!-- Puerto Santiago -->
+      <g transform="translate(85,65)" fill="#3a4050">
+        <rect x="-8" y="-3.5" width="3" height="4"/>
+        <rect x="-4" y="-4.5" width="3" height="5"/>
+        <rect x="0" y="-3.5" width="3" height="4"/>
+        <rect x="4" y="-2.5" width="3" height="3"/>
+        <rect x="-6" y="2" width="3" height="3"/>
+        <rect x="-1" y="1.5" width="3" height="3.5"/>
+        <rect x="3" y="2" width="3" height="2.5"/>
       </g>
-
-      <circle cx="85" cy="65" r="14" fill="#2a2e33" opacity="0.7"/>
-      <circle cx="140" cy="125" r="6" fill="#2a2e33" opacity="0.7"/>
-      <circle cx="210" cy="240" r="9" fill="#2a2e33" opacity="0.7"/>
-      <circle cx="260" cy="380" r="8" fill="#2a2e33" opacity="0.75"/>
-      <circle cx="290" cy="460" r="11" fill="#2a2e33" opacity="0.75"/>
-
-      <g transform="translate(260,380)">
-        <rect x="-5" y="-1" width="3" height="3" fill="#4a4f56"/>
-        <polygon points="-5,-1 -3.5,-3 -2,-1" fill="#5a5f66"/>
-        <rect x="-1" y="0" width="3" height="3" fill="#4a4f56"/>
-        <polygon points="-1,0 0.5,-2 2,0" fill="#5a5f66"/>
-        <rect x="3" y="-1" width="3" height="3" fill="#4a4f56"/>
-        <polygon points="3,-1 4.5,-3 6,-1" fill="#5a5f66"/>
+      <!-- Cerro Pálido -->
+      <g transform="translate(290,460)" fill="#3a4050">
+        <rect x="-7" y="-3" width="2.5" height="2.5"/>
+        <rect x="-3" y="-3.5" width="2.5" height="3"/>
+        <rect x="1" y="-2.5" width="2.5" height="2.5"/>
+        <rect x="5" y="-2" width="2.5" height="2"/>
+        <rect x="-5" y="1.5" width="2.5" height="2.5"/>
+        <rect x="0" y="1.5" width="2.5" height="2"/>
       </g>
-
-      <g transform="translate(290,460)">
-        <rect x="-7" y="-2" width="2.5" height="2.5" fill="#4a4f56"/>
-        <rect x="-3" y="-3" width="2.5" height="3" fill="#4a4f56"/>
-        <rect x="1" y="-2" width="2.5" height="2.5" fill="#4a4f56"/>
-        <rect x="5" y="-1" width="2.5" height="2" fill="#4a4f56"/>
-        <rect x="-5" y="2" width="2.5" height="2.5" fill="#4a4f56"/>
-        <rect x="0" y="2" width="2.5" height="2" fill="#4a4f56"/>
-      </g>
-
+      <!-- Church -->
       <g transform="translate(295,478)">
-        <rect x="-3" y="-2" width="6" height="6" fill="#3a3e44" stroke="#6c7178" stroke-width="0.5"/>
-        <polygon points="-3,-2 0,-5 3,-2" fill="#5a5f66"/>
-        <line x1="0" y1="-7" x2="0" y2="-4" stroke="#c4c7cc" stroke-width="0.8"/>
-        <line x1="-1.2" y1="-5.5" x2="1.2" y2="-5.5" stroke="#c4c7cc" stroke-width="0.8"/>
+        <rect x="-3" y="-2" width="6" height="6" fill="#2e3540" stroke="#5a6070" stroke-width="0.5"/>
+        <polygon points="-3,-2 0,-6 3,-2" fill="#3a4555"/>
+        <line x1="0" y1="-8" x2="0" y2="-5.5" stroke="#c4c7cc" stroke-width="1"/>
+        <line x1="-1.5" y1="-7" x2="1.5" y2="-7" stroke="#c4c7cc" stroke-width="1"/>
+      </g>
+      <!-- Mine -->
+      <g transform="translate(250,498)">
+        <rect x="-5" y="-3" width="10" height="7" fill="#2a2e35" stroke="#5a5f66" stroke-width="0.5" rx="0.5"/>
+        <polygon points="-5,-3 0,-7 5,-3" fill="#353a42"/>
+        <rect x="-1.5" y="-1" width="3" height="5" fill="#1a1e25"/>
       </g>
 
+
+      <!-- === LABELS === -->
       <g font-family="-apple-system, Segoe UI, sans-serif" font-size="9" fill="#6c7178" font-weight="500">
-        <text x="105" y="60">PUERTO SANTIAGO</text>
-        <text x="150" y="120">San Marcos</text>
-        <text x="183" y="192" fill="#85b7eb" font-style="italic">Cataratas del Diablo</text>
-        <text x="220" y="237">Villa Reyes</text>
-        <text x="250" y="298" fill="#9aa0a6">Puente Roto</text>
-        <text x="270" y="378">Aldea San Tomás</text>
-        <text x="293" y="438" fill="#9aa0a6">Puente Viejo</text>
-        <text x="305" y="456" font-weight="600" fill="#c4c7cc">CERRO PÁLIDO</text>
-        <text x="305" y="484" fill="#9aa0a6" font-style="italic">Igl. San Rafael</text>
-        <text x="340" y="422" fill="#85b7eb" font-style="italic" font-size="8">Salto Bruja</text>
-        <text x="225" y="170" opacity="0.55">Sierra Verde</text>
-        <text x="35" y="450" opacity="0.55">Bahía Negra</text>
-        <text x="325" y="160" opacity="0.55">Laguna</text>
+        <text x="105" y="60">ПУЕРТО САНТЬЯГО</text>
+        <text x="150" y="120">Сан Маркос</text>
+        <text x="183" y="188" fill="#85b7eb" font-style="italic">Водоспади Дьябло</text>
+        <text x="220" y="237">Вілья Рейєс</text>
+        <text x="250" y="294" fill="#9aa0a6">Пуенте Рото</text>
+        <text x="270" y="374">Альдея Сан Томас</text>
+        <text x="293" y="434" fill="#9aa0a6">Пуенте В'єхо</text>
+        <text x="305" y="453" font-weight="600" fill="#c4c7cc">СЕРРО ПАЛЬДО</text>
+        <text x="305" y="482" fill="#9aa0a6" font-style="italic">Цк. Сан Рафаель</text>
+        <text x="338" y="418" fill="#85b7eb" font-style="italic" font-size="8">Сальто Бруха</text>
+        <text x="216" y="167" opacity="0.5">Сьєрра Верде</text>
+        <text x="35" y="448" opacity="0.5">Баїя Негра</text>
+        <text x="315" y="153" opacity="0.6" fill="#4a8aaa">Лагуна</text>
       </g>
 
+      <!-- === WAYPOINT MARKERS === -->
+      <!-- Start: Puerto Santiago -->
       <g transform="translate(85,65)">
-        <circle r="9" fill="#15171a"/>
-        <circle r="6" fill="#4ade80"/>
-        <circle r="2.5" fill="#15171a"/>
+        <circle r="10" fill="#15171a" opacity="0.8"/>
+        <circle r="7" fill="#4ade80"/>
+        <circle r="3" fill="#15171a"/>
       </g>
-
-      <g transform="translate(140,125)"><circle r="5" fill="#1a73e8" stroke="#15171a" stroke-width="1.5"/></g>
-      <g transform="translate(175,195)"><circle r="5" fill="#4a9bf0" stroke="#15171a" stroke-width="1.5"/></g>
-      <g transform="translate(210,240)"><circle r="5" fill="#1a73e8" stroke="#15171a" stroke-width="1.5"/></g>
-      <g transform="translate(240,300)"><circle r="5" fill="#4a9bf0" stroke="#15171a" stroke-width="1.5"/></g>
-      <g transform="translate(260,380)"><circle r="5" fill="#1a73e8" stroke="#15171a" stroke-width="1.5"/></g>
-
+      <!-- Intermediate stops -->
+      <g transform="translate(140,125)"><circle r="6" fill="#15171a" opacity="0.7"/><circle r="4.5" fill="#1a73e8"/></g>
+      <g transform="translate(175,195)"><circle r="6" fill="#15171a" opacity="0.7"/><circle r="4.5" fill="#4a9bf0"/></g>
+      <g transform="translate(210,240)"><circle r="6" fill="#15171a" opacity="0.7"/><circle r="4.5" fill="#1a73e8"/></g>
+      <g transform="translate(240,300)"><circle r="6" fill="#15171a" opacity="0.7"/><circle r="4.5" fill="#4a9bf0"/></g>
+      <g transform="translate(260,380)"><circle r="6" fill="#15171a" opacity="0.7"/><circle r="4.5" fill="#1a73e8"/></g>
+      <!-- Warning: Puente Viejo -->
       <g transform="translate(280,440)">
-        <circle r="7" fill="#fbbc04" stroke="#15171a" stroke-width="1.5"/>
-        <text y="3" text-anchor="middle" font-size="9" font-weight="700" fill="#15171a">!</text>
+        <circle r="8" fill="#15171a" opacity="0.75"/>
+        <circle r="6.5" fill="#fbbc04"/>
+        <text y="3.5" text-anchor="middle" font-size="9" font-weight="700" fill="#15171a">!</text>
       </g>
-
+      <!-- Destination: Cerro Pálido -->
       <g transform="translate(290,460)">
-        <path d="M 0 -22 C -10 -22 -14 -14 -14 -8 C -14 -2 -8 6 0 16 C 8 6 14 -2 14 -8 C 14 -14 10 -22 0 -22 Z"
-              fill="#ea4335" stroke="#15171a" stroke-width="1.5"/>
-        <circle cy="-10" r="5" fill="#fff"/>
+        <path d="M 0 -23 C -11 -23 -15 -14 -15 -8 C -15 -2 -8 6 0 17 C 8 6 15 -2 15 -8 C 15 -14 11 -23 0 -23 Z"
+              fill="#ea4335" stroke="#0d1014" stroke-width="1.5"/>
+        <circle cy="-10" r="5.5" fill="#fff"/>
+        <circle cy="-10" r="2.5" fill="#ea4335"/>
       </g>
 
-      <g transform="translate(250,498)" opacity="0.85">
-        <circle r="4" fill="#fff" stroke="#15171a" stroke-width="1.2"/>
+      <g transform="translate(250,498)">
+        <text x="-55" y="3" font-family="-apple-system" font-size="8" fill="#8a8f96">Шахта Ла Есперанса</text>
       </g>
-      <text x="195" y="503" font-family="-apple-system" font-size="8" fill="#8a8f96">Mina La Esperanza</text>
     </svg>
 
     <div class="map-controls">
@@ -429,7 +511,7 @@
       </div>
     </div>
 
-    <div class="attribution">© Brújula · OSM · sin conexión</div>
+    <div class="attribution">© Компас · OSM · без з'єднання</div>
   </div>
 
   <div class="sheet">
@@ -438,99 +520,99 @@
     <div class="summary">
       <div class="eta">
         <span class="time">16:42</span>
-        <span class="duration">· 1 día 4 h</span>
+        <span class="duration">· 1 день 4 год</span>
       </div>
-      <div class="meta">387 km · vía Carr. <b>Federal 17</b> y Camino <b>El Tigre</b></div>
+      <div class="meta">387 км · через шосе <b>Federal 17</b> і дорогу <b>El Tigre</b></div>
       <div class="warning">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 1 21h22L12 2zm0 6 7.5 13h-15L12 8zm-1 4v4h2v-4h-2zm0 5v2h2v-2h-2z"/></svg>
-        Zona sin cobertura desde km 280 · Camino sin pavimentar tras Puente Viejo
+        Зона без покриття від км 280 · Ґрунтова дорога після Пуенте В'єхо
       </div>
     </div>
 
     <div class="stops">
-      <h3>Itinerario · trabajo de campo Geo-204</h3>
+      <h3>Маршрут · польова робота Гео-204</h3>
 
       <div class="stop start">
         <div class="pin"><span class="dot"></span></div>
         <div class="body">
-          <div class="name">Hostal Universitario, Puerto Santiago</div>
-          <div class="sub"><span>Salida</span><span class="sep">·</span><span>mar 06:45</span><span class="sep">·</span><span>grupo Geo-204 (8 personas)</span></div>
+          <div class="name">Університетський готель, Пуерто Сантьяго</div>
+          <div class="sub"><span>Відправлення</span><span class="sep">·</span><span>вт 06:45</span><span class="sep">·</span><span>група Гео-204 (8 осіб)</span></div>
         </div>
       </div>
 
       <div class="stop">
         <div class="pin"><span class="dot"></span></div>
         <div class="body">
-          <div class="name">Gasolinera El Cóndor, San Marcos</div>
-          <div class="sub"><span>09:14</span><span class="sep">·</span><span>combustible + desayuno</span></div>
-          <div class="note cool">"empanada de pollo $1.20 me cambia la vida"</div>
+          <div class="name">Заправка Ель Кондор, Сан Маркос</div>
+          <div class="sub"><span>09:14</span><span class="sep">·</span><span>пальне + сніданок</span></div>
+          <div class="note cool">"емпанада з куркою $1.20 — змінила моє життя"</div>
         </div>
       </div>
 
       <div class="stop poi">
         <div class="pin"><span class="dot"></span></div>
         <div class="body">
-          <div class="name">Cataratas del Diablo</div>
-          <div class="sub"><span>mar 12:30</span><span class="sep">·</span><span>parada turística</span><span class="sep">·</span><span>40 min</span></div>
-          <div class="note cool">"47 fotos!! Prof. Acosta found iron oxide veins in the basalt — examen material fr"</div>
+          <div class="name">Водоспади Дьябло</div>
+          <div class="sub"><span>вт 12:30</span><span class="sep">·</span><span>туристична зупинка</span><span class="sep">·</span><span>40 хв</span></div>
+          <div class="note cool">"47 фото!! Проф. Акоста знайшла прожилки залізного оксиду в базальті — матеріал до іспиту fr"</div>
         </div>
       </div>
 
       <div class="stop">
         <div class="pin"><span class="dot"></span></div>
         <div class="body">
-          <div class="name">Hostal La Quinta, Villa Reyes</div>
-          <div class="sub"><span>llegada mar 19:40</span><span class="sep">·</span><span>noche</span></div>
-          <div class="note cool">"wifi pésimo pero la dueña hace flan ❤"</div>
+          <div class="name">Готель Ла Кінта, Вілья Рейєс</div>
+          <div class="sub"><span>прибуття вт 19:40</span><span class="sep">·</span><span>ночівля</span></div>
+          <div class="note cool">"wifi жахливий але господиня робить флан ❤"</div>
         </div>
       </div>
 
       <div class="stop poi">
         <div class="pin"><span class="dot"></span></div>
         <div class="body">
-          <div class="name">Puente Roto</div>
-          <div class="sub"><span>mié 10:55</span><span class="sep">·</span><span>cruce Río Toro</span></div>
-          <div class="note cool">"no miré abajo. 0/10 stars. Diego almost threw up"</div>
+          <div class="name">Пуенте Рото</div>
+          <div class="sub"><span>ср 10:55</span><span class="sep">·</span><span>переправа через Ріо Торо</span></div>
+          <div class="note cool">"не дивилась вниз. 0/10. Дієго мало не блював"</div>
         </div>
       </div>
 
       <div class="stop">
         <div class="pin"><span class="dot"></span></div>
         <div class="body">
-          <div class="name">Aldea San Tomás</div>
-          <div class="sub"><span>mié 13:20</span><span class="sep">·</span><span>almuerzo</span><span class="sep">·</span><span>~60 habitantes</span></div>
-          <div class="note">"weird vibes. everyone STARED at prof. nobody would speak Spanish to us. quechua? something else? Marta said she heard them call us 'forasteros' which fine ok but the way they said it"</div>
+          <div class="name">Альдея Сан Томас</div>
+          <div class="sub"><span>ср 13:20</span><span class="sep">·</span><span>обід</span><span class="sep">·</span><span>~60 жителів</span></div>
+          <div class="note">"дивна атмосфера. всі ДИВИЛИСЯ на проф. ніхто не говорив іспанською. кечуа? щось інше? Марта каже почула як нас назвали 'forasteros' — ну ладно, але ТОН..."</div>
         </div>
       </div>
 
       <div class="stop flag">
         <div class="pin"><span class="dot"></span></div>
         <div class="body">
-          <div class="name">Puente Viejo</div>
-          <div class="sub"><span>mié 14:45</span><span class="sep">·</span><span>cruce Quebrada Negra</span></div>
-          <div class="note">"viejito en San Tomás said don't cross after dark. said 'ellos cantan' — they sing?? what sings??"</div>
+          <div class="name">Пуенте В'єхо</div>
+          <div class="sub"><span>ср 14:45</span><span class="sep">·</span><span>переправа через Кебрада Негра</span></div>
+          <div class="note">"старий у Сан Томасі сказав не переходити після темряви. сказав 'ellos cantan' — вони співають?? хто співає??"</div>
         </div>
       </div>
 
       <div class="stop end">
         <div class="pin"><span class="dot"></span></div>
         <div class="body">
-          <div class="name">Pueblo Cerro Pálido</div>
-          <div class="sub"><span>llegada mié 16:42</span><span class="sep">·</span><span>sitio de campo</span></div>
-          <div class="note cool">"prof tiene reunión con capataz de mina jue 10:00. yo libre hasta entonces — quiero ver la iglesia, Marta quiere ir conmigo"</div>
+          <div class="name">Містечко Серро Пальдо</div>
+          <div class="sub"><span>прибуття ср 16:42</span><span class="sep">·</span><span>польова база</span></div>
+          <div class="note cool">"проф має зустріч з керівником шахти чт 10:00. я вільна до тоді — хочу побачити церкву, Марта хоче піти зі мною"</div>
         </div>
       </div>
 
       <div class="stop poi">
         <div class="pin"><span class="dot"></span></div>
         <div class="body">
-          <div class="name">Iglesia de San Rafael</div>
-          <div class="sub"><span>POI guardado</span><span class="sep">·</span><span>colonial s. XVIII</span></div>
-          <div class="note cool">"frescos originales supuestamente — Wikipedia dice cerrada al público hace 4 años, ¿por qué??"</div>
+          <div class="name">Церква Сан Рафаель</div>
+          <div class="sub"><span>збережений POI</span><span class="sep">·</span><span>колоніальний XVIII ст.</span></div>
+          <div class="note cool">"подібно є оригінальні фрески — Вікіпедія каже закрита для публіки 4 роки тому, чому??"</div>
         </div>
       </div>
 
-      <h3>Búsquedas recientes</h3>
+      <h3>Недавні пошуки</h3>
     </div>
 
     <div class="recents">
@@ -539,61 +621,61 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
         <div class="body">
-          <div class="name">Mina La Esperanza, Cerro Pálido</div>
-          <div class="sub">12 km al sur del pueblo · operación suspendida 2019</div>
+          <div class="name">Шахта Ла Есперанса, Серро Пальдо</div>
+          <div class="sub">12 км на південь від містечка · роботи призупинено 2019</div>
         </div>
-        <div class="when">hace 2 días</div>
+        <div class="when">2 дні тому</div>
       </div>
       <div class="item">
         <div class="ico">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
         <div class="body">
-          <div class="name">"yawar" en quechua qué significa</div>
-          <div class="sub">traducción · sin conexión</div>
+          <div class="name">що означає "yawar" кечуа</div>
+          <div class="sub">переклад · без з'єднання</div>
         </div>
-        <div class="when">hace 2 días</div>
+        <div class="when">2 дні тому</div>
       </div>
       <div class="item">
         <div class="ico">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
         <div class="body">
-          <div class="name">Salto de la Bruja — sendero</div>
-          <div class="sub">cascada secundaria · 6 km E de Cerro Pálido</div>
+          <div class="name">Сальто де ла Бруха — стежка</div>
+          <div class="sub">вторинний водоспад · 6 км на схід від Серро Пальдо</div>
         </div>
-        <div class="when">hace 2 días</div>
+        <div class="when">2 дні тому</div>
       </div>
       <div class="item">
         <div class="ico">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
         <div class="body">
-          <div class="name">Iglesia San Rafael Cerro Pálido cerrada por qué</div>
-          <div class="sub">3 resultados · sin conexión</div>
+          <div class="name">Церква Сан Рафаель Серро Пальдо закрита чому</div>
+          <div class="sub">3 результати · без з'єднання</div>
         </div>
-        <div class="when">hace 3 días</div>
+        <div class="when">3 дні тому</div>
       </div>
       <div class="item">
         <div class="ico">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
         <div class="body">
-          <div class="name">US Embassy Puerto Santiago number</div>
-          <div class="sub">Av. Bolívar 1180 · +1 emergencia</div>
+          <div class="name">Посольство США Пуерто Сантьяго номер</div>
+          <div class="sub">Av. Bolívar 1180 · +1 екстрений</div>
         </div>
-        <div class="when">hace 6 días</div>
+        <div class="when">6 днів тому</div>
       </div>
     </div>
 
     <div class="actions">
       <button class="btn secondary">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Salir
+        Вийти
       </button>
       <button class="btn primary">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
-        Iniciar ruta
+        Почати маршрут
       </button>
     </div>
   </div>

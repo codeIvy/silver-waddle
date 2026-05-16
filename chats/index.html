@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WhatsApp</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --chat-bg: #0b141a;
@@ -23,27 +22,61 @@
     --user-ada: #e0bbff;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; background: #000; font-family: 'Inter', -apple-system, sans-serif; color: var(--text-primary); overflow: hidden; }
+  html, body { height: 100%; background: #000; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; color: var(--text-primary); overflow: hidden; -webkit-font-smoothing: antialiased; }
   body { display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%); }
-  .phone {
-    width: 100%; max-width: 420px; height: 100vh; max-height: 900px;
+  .device {
+    width: 100%; height: 100%;
     background: var(--chat-bg); position: relative; display: flex; flex-direction: column;
-    overflow: hidden; box-shadow: 0 0 0 12px #0a0a0a, 0 0 0 13px #2a2a2a, 0 30px 80px rgba(0, 0, 0, 0.7);
-    border-radius: 38px;
+    overflow: hidden;
   }
-  @media (max-width: 480px) {
+  @media (min-width: 500px) {
+    body { background: #0a0b0d; padding: 20px; }
+    .device {
+      width: 390px;
+      height: 844px;
+      max-height: 95vh;
+      border-radius: 44px;
+      border: 10px solid #1a1c1f;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7), inset 0 0 0 1px #2a2c30;
+    }
+    .device::before {
+      content: "";
+      position: absolute;
+      top: 12px; left: 50%;
+      transform: translateX(-50%);
+      width: 110px; height: 32px;
+      background: #0a0b0d;
+      border-radius: 20px;
+      z-index: 100;
+    }
+  }
+  @media (max-width: 499px) {
     body { background: var(--chat-bg); }
-    .phone { max-width: 100%; max-height: 100%; border-radius: 0; box-shadow: none; }
+    .device { max-width: 100%; max-height: 100%; border-radius: 0; box-shadow: none; }
   }
-  .notch { height: 30px; background: #000; position: relative; }
-  .notch::before { content: ''; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 110px; height: 22px; background: #000; border-radius: 0 0 16px 16px; }
-  .status-bar { background: var(--header-bg); padding: 6px 22px 4px; display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; flex-shrink: 0; }
-  .status-right { display: flex; gap: 6px; align-items: center; font-size: 11px; }
-  .battery { width: 22px; height: 11px; border: 1px solid var(--text-primary); border-radius: 2px; padding: 1px; position: relative; }
-  .battery::after { content: ''; position: absolute; right: -3px; top: 3px; width: 2px; height: 5px; background: var(--text-primary); }
-  .battery-fill { background: #f87171; height: 100%; }
+  .statusbar {
+    height: 50px; padding: 18px 28px 0;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.2px;
+    flex-shrink: 0; z-index: 50;
+  }
+  .statusbar .right { display: flex; align-items: center; gap: 6px; }
+  .signal { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+  .signal i { width: 3px; background: #fff; border-radius: 1px; }
+  .signal i:nth-child(1) { height: 4px; }
+  .signal i:nth-child(2) { height: 6px; }
+  .signal i:nth-child(3) { height: 8px; opacity: 0.5; }
+  .signal i:nth-child(4) { height: 10px; opacity: 0.3; }
+  .battery {
+    position: relative; width: 26px; height: 13px;
+    border: 1.2px solid #fff; border-radius: 3px; padding: 1.5px;
+  }
+  .battery::after {
+    content: ""; position: absolute; right: -3px; top: 3.5px;
+    width: 2px; height: 5px; background: #fff; border-radius: 0 1px 1px 0;
+  }
+  .battery .fill { height: 100%; width: 14%; background: #ff5252; border-radius: 1px; }
   .chat-header { background: var(--header-bg); padding: 10px 14px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.2); }
-  .back-arrow { font-size: 24px; font-weight: 300; padding: 4px 6px; }
   .group-icon { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #6a4c93, #ff595e); display: flex; align-items: center; justify-content: center; font-size: 18px; }
   .chat-info { flex: 1; min-width: 0; }
   .chat-title { font-size: 16px; font-weight: 500; }
@@ -74,24 +107,24 @@
   .input-bar { background: var(--header-bg); padding: 8px 10px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .input-pill { flex: 1; background: var(--bubble-other); border-radius: 24px; padding: 10px 14px; color: var(--text-meta); font-size: 14px; display: flex; align-items: center; gap: 10px; }
   .send-btn { width: 42px; height: 42px; background: var(--bubble-other); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 18px; }
-  .home-indicator { background: #000; padding: 8px 0; display: flex; justify-content: center; flex-shrink: 0; }
-  .home-bar { width: 134px; height: 5px; background: var(--text-primary); border-radius: 3px; opacity: 0.95; }
+  .home-indicator { display: flex; justify-content: center; padding-bottom: 8px; margin-top: 4px; z-index: 5; }
+  .home-bar { width: 134px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.6); }
 </style>
 </head>
 <body>
-<div class="phone">
-  <div class="notch"></div>
-  <div class="status-bar">
+<div class="device">
+  <div class="statusbar">
     <span id="time">--:--</span>
-    <div class="status-right">
-      <span>📶</span>
-      <span id="signal">-×</span>
-      <div class="battery"><div class="battery-fill" id="batteryFill"></div></div>
-      <span id="battery">--%</span>
-    </div>
+    <span class="right">
+      <span class="signal"><i></i><i></i><i></i><i></i></span>
+      <span style="font-size:11px;">SOS</span>
+      <span class="battery"><span class="fill" id="batteryFill"></span></span>
+    </span>
   </div>
   <div class="chat-header">
-    <span class="back-arrow">‹</span>
+    <a href="../index.html" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;color:#c4c7cc;text-decoration:none;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
     <div class="group-icon">🦋</div>
     <div class="chat-info">
       <div class="chat-title" id="chatTitle">--</div>
@@ -101,7 +134,7 @@
   <div class="messages" id="messages"></div>
   <div class="input-bar">
     <span style="font-size: 20px; padding: 6px;">😊</span>
-    <div class="input-pill"><span style="flex: 1;">Message</span><span>📎</span><span>📷</span></div>
+    <div class="input-pill"><span style="flex: 1;">Повідомлення</span><span>📎</span><span>📷</span></div>
     <div class="send-btn">🎤</div>
   </div>
   <div class="home-indicator"><div class="home-bar"></div></div>
@@ -116,8 +149,8 @@
       const { phone, messages } = data;
       
       document.getElementById('time').textContent = phone.time;
-      document.getElementById('signal').textContent = phone.signal;
-      document.getElementById('battery').textContent = phone.battery + '%';
+      
+      
       document.getElementById('batteryFill').style.width = phone.battery + '%';
       document.getElementById('chatTitle').textContent = phone.title;
       document.getElementById('chatSubtitle').textContent = phone.subtitle;
