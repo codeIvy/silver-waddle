@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>SpectroScan</title>
+<style>
+  :root{
+    --bg:#0a0d10; --panel:#12181d; --line:#1e2731;
+    --ink:#e8f0f4; --dim:#6b7d88; --accent:#33e1a0; --warn:#ff5d5d;
+    --mono:'DM Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:var(--mono);-webkit-tap-highlight-color:transparent;overflow:hidden}
+  #stage{position:fixed;inset:0;display:flex;flex-direction:column}
+  #view{position:relative;flex:1;overflow:hidden;background:#000}
+  video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    transform:scaleX(1)}
+  #overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  /* HUD */
+  #hud{position:absolute;top:0;left:0;right:0;padding:14px 16px;
+    display:flex;justify-content:space-between;align-items:flex-start;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  #hud .tag{color:var(--accent)}
+  #status{position:absolute;left:16px;bottom:14px;font-size:12px;letter-spacing:.06em}
+  #status.lock{color:var(--accent)} #status.seek{color:var(--warn)}
+  /* control bar */
+  #bar{background:var(--panel);border-top:1px solid var(--line);
+    padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    display:flex;gap:10px;align-items:center}
+  button{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    background:transparent;color:var(--ink);border:1px solid var(--line);
+    border-radius:2px;padding:12px 16px;flex:1}
+  button.go{border-color:var(--accent);color:var(--accent)}
+  button:active{background:var(--line)}
+  button:disabled{opacity:.35}
+  #gainWrap{display:flex;align-items:center;gap:8px;flex:1;color:var(--dim);font-size:10px;
+    letter-spacing:.12em;text-transform:uppercase}
+  input[type=range]{flex:1;accent-color:var(--accent)}
+  #splash{position:absolute;inset:0;background:var(--bg);z-index:5;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;gap:18px;
+    padding:32px;text-align:center}
+  #splash h1{margin:0;font-size:26px;letter-spacing:.24em;font-weight:500}
+  #splash h1 span{color:var(--accent)}
+  #splash p{margin:0;max-width:34ch;font-size:12px;line-height:1.7;color:var(--dim);
+    letter-spacing:.04em}
+  #splash button{flex:none;padding:14px 28px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="view">
+    <video id="video" playsinline muted></video>
+    <canvas id="overlay"></canvas>
+    <div id="hud"><div><span class="tag">SPECTRO</span>SCAN</div><div id="fps">–</div></div>
+    <div id="status" class="seek">seeking code…</div>
+    <div id="splash">
+      <h1>SPECTRO<span>SCAN</span></h1>
+      <p>Point the rear camera at a marker-framed spectrogram. Keep both marker bars
+         in view and sweep slowly left-to-right — the image plays as you move.</p>
+      <button class="go" id="startBtn">Start camera</button>
+    </div>
+  </div>
+  <div id="bar">
+    <button id="freezeBtn" disabled>Freeze band</button>
+    <div id="gainWrap">Vol<input type="range" id="gain" min="0" max="100" value="55"></div>
+  </div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * SpectroScan — camera → sound decoder for marker-framed spectrograms
+ * Format read (from the sample code):
+ *   - dark = loud, on white
+ *   - full-width dark MARKER bars top & bottom (pattern 1:1:4:1 thin/thick)
+ *   - content (frequency) band = the large gap between marker groups
+ * Detection: per-row dark-fraction across the code width; the biggest gap
+ * between full-width dark rows is the content band.
+ * ------------------------------------------------------------------ */
+
+// ---- tunable constants -------------------------------------------------
+const CFG = {
+  PROC_W: 300,          // processing resolution width (px). lower = faster
+  N_BINS: 128,          // frequency oscillators. lower this if audio stutters
+  FREQ_MIN: 120,        // Hz at bottom of band
+  FREQ_MAX: 3600,       // Hz at top of band
+  SCALE: 'log',         // 'log' (musical) or 'lin'
+  X_INSET: 0.10,        // ignore this fraction of width on each side (glare/edges)
+  READ_COLS: 5,         // columns averaged around centre for the playhead
+  MARKER_DARK: 0.80,    // row is a marker if this fraction of width is dark
+  DARK_LEVEL: 110,      // pixel < this (0-255) counts as "dark"
+  GAMMA: 1.6,           // amplitude contrast (higher = more selective)
+  NOISE_GATE: 0.06      // amplitudes below this are silenced
+};
+
+const video   = document.getElementById('video');
+const overlay = document.getElementById('overlay');
+const octx    = overlay.getContext('2d');
+const statusEl= document.getElementById('status');
+const fpsEl   = document.getElementById('fps');
+const startBtn= document.getElementById('startBtn');
+const splash  = document.getElementById('splash');
+const freezeBtn=document.getElementById('freezeBtn');
+const gainEl  = document.getElementById('gain');
+
+// hidden processing canvas
+const proc = document.createElement('canvas');
+const pctx = proc.getContext('2d', { willReadFrequently:true });
+
+let audioCtx, node, running=false, frozen=false, frozenBand=null;
+let binFreqs = new Float32Array(CFG.N_BINS);
+let amps = new Float32Array(CFG.N_BINS);
+
+// ---- frequency table for the bins -------------------------------------
+function buildFreqs(){
+  for(let i=0;i<CFG.N_BINS;i++){
+    const f = i/(CFG.N_BINS-1);
+    binFreqs[i] = CFG.SCALE==='log'
+      ? CFG.FREQ_MIN*Math.pow(CFG.FREQ_MAX/CFG.FREQ_MIN, f)
+      : CFG.FREQ_MIN + (CFG.FREQ_MAX-CFG.FREQ_MIN)*f;
+  }
+}
+
+// ---- AudioWorklet (additive synth) as an inline module ----------------
+const workletCode = `
+class Additive extends AudioWorkletProcessor {
+  constructor(){
+    super();
+    this.N = 0; this.freqs=null; this.phase=null;
+    this.target=null; this.cur=null;
+    // sine lookup table for speed on mobile
+    this.LUT_N = 2048;
+    this.lut = new Float32Array(this.LUT_N+1);
+    for(let i=0;i<=this.LUT_N;i++) this.lut[i]=Math.sin(2*Math.PI*i/this.LUT_N);
+    this.gain = 0.5;
+    this.port.onmessage = (e)=>{
+      const d=e.data;
+      if(d.type==='init'){
+        this.N=d.freqs.length;
+        this.freqs=d.freqs;
+        this.phase=new Float32Array(this.N);
+        this.target=new Float32Array(this.N);
+        this.cur=new Float32Array(this.N);
+      } else if(d.type==='amps'){
+        this.target.set(d.amps);
+      } else if(d.type==='gain'){
+        this.gain=d.value;
+      }
+    };
+  }
+  sine(p){ // p in [0,1)
+    const x=p*this.LUT_N; const i=x|0; const fr=x-i;
+    return this.lut[i]+(this.lut[i+1]-this.lut[i])*fr;
+  }
+  process(inputs, outputs){
+    const out=outputs[0][0];
+    if(!this.N){ out.fill(0); return true; }
+    const sr=sampleRate, n=out.length;
+    const inc=new Float32Array(this.N);
+    for(let k=0;k<this.N;k++) inc[k]=this.freqs[k]/sr;
+    const smooth=0.15;                 // amplitude glide per block
+    for(let k=0;k<this.N;k++) this.cur[k]+= (this.target[k]-this.cur[k])*smooth;
+    let norm=0; for(let k=0;k<this.N;k++) norm+=this.cur[k];
+    norm = norm>1 ? 1/Math.sqrt(norm) : 1;   // keep mix from clipping
+    for(let s=0;s<n;s++){
+      let acc=0;
+      for(let k=0;k<this.N;k++){
+        let ph=this.phase[k]+inc[k]; ph-=ph|0; this.phase[k]=ph;
+        acc += this.cur[k]*this.sine(ph);
+      }
+      out[s]=Math.tanh(acc*norm*this.gain*2.2);  // soft-clip safety
+    }
+    return true;
+  }
+}
+registerProcessor('additive', Additive);
+`;
+
+// ---- start ------------------------------------------------------------
+function fail(msg){ statusEl.textContent=msg; statusEl.className='seek';
+  startBtn.textContent='Retry'; startBtn.disabled=false; }
+
+async function start(){
+  buildFreqs();
+  startBtn.disabled=true;
+
+  // preflight: getUserMedia needs a secure context (https or localhost)
+  if(!window.isSecureContext || !navigator.mediaDevices?.getUserMedia){
+    fail('needs https or localhost — serve the file, don\u2019t open it directly');
+    return;
+  }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio:false,
+      video:{ facingMode:{ideal:'environment'},
+              width:{ideal:1280}, height:{ideal:720} }
+    });
+    video.srcObject = stream;
+    await video.play();
+  }catch(err){
+    const n=err&&err.name;
+    if(n==='NotAllowedError')      fail('permission denied — allow camera and retry');
+    else if(n==='NotFoundError')   fail('no camera found on this device');
+    else if(n==='NotReadableError')fail('camera busy — close other apps using it');
+    else                           fail('camera error: '+(n||err));
+    return;
+  }
+
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  const blob = new Blob([workletCode], {type:'application/javascript'});
+  await audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
+  node = new AudioWorkletNode(audioCtx,'additive',{outputChannelCount:[1]});
+  node.connect(audioCtx.destination);
+  node.port.postMessage({type:'init', freqs:binFreqs});
+  node.port.postMessage({type:'gain', value:gainEl.value/100});
+  if(audioCtx.state!=='running') await audioCtx.resume();
+
+  splash.style.display='none';
+  freezeBtn.disabled=false;
+  running=true;
+  requestAnimationFrame(loop);
+}
+
+// ---- per-frame detect + sonify ---------------------------------------
+let last=performance.now(), frames=0, fpsAcc=0;
+function loop(now){
+  if(!running) return;
+  const vw=video.videoWidth, vh=video.videoHeight;
+  if(vw){
+    const pw=CFG.PROC_W, ph=Math.round(pw*vh/vw);
+    if(proc.width!==pw){ proc.width=pw; proc.height=ph; }
+    pctx.drawImage(video,0,0,pw,ph);
+    const img=pctx.getImageData(0,0,pw,ph).data;
+
+    // --- per-row dark fraction across code width ---
+    const x0=Math.floor(pw*CFG.X_INSET), x1=Math.ceil(pw*(1-CFG.X_INSET));
+    const span=x1-x0;
+    const darkFrac=new Float32Array(ph);
+    for(let y=0;y<ph;y++){
+      let d=0, base=y*pw*4;
+      for(let x=x0;x<x1;x++){
+        const i=base+x*4;
+        const lum=(img[i]*0.299+img[i+1]*0.587+img[i+2]*0.114);
+        if(lum<CFG.DARK_LEVEL) d++;
+      }
+      darkFrac[y]=d/span;
+    }
+    // marker rows = nearly full-width dark
+    const markers=[];
+    for(let y=0;y<ph;y++) if(darkFrac[y]>=CFG.MARKER_DARK) markers.push(y);
+
+    let band=null;
+    if(markers.length>=2){
+      // biggest gap between consecutive marker rows = content band
+      let bestGap=0, top=-1, bot=-1;
+      for(let m=1;m<markers.length;m++){
+        const g=markers[m]-markers[m-1];
+        if(g>bestGap){ bestGap=g; top=markers[m-1]; bot=markers[m]; }
+      }
+      if(bestGap > ph*0.25){ band={top:top+1, bot:bot-1}; }
+    }
+    if(frozen && frozenBand) band=frozenBand;
+
+    if(band){
+      sonify(img,pw,ph,band);
+      statusEl.textContent = frozen ? 'band frozen' : 'code locked';
+      statusEl.className='lock';
+    }else{
+      amps.fill(0);
+      node.port.postMessage({type:'amps', amps});
+      statusEl.textContent='seeking code…';
+      statusEl.className='seek';
+    }
+    drawOverlay(band, pw, ph);
+  }
+
+  // fps
+  frames++; fpsAcc+=now-last; last=now;
+  if(fpsAcc>500){ fpsEl.textContent=Math.round(1000*frames/fpsAcc)+' fps'; frames=0; fpsAcc=0; }
+  requestAnimationFrame(loop);
+}
+
+function sonify(img,pw,ph,band){
+  const cx=Math.floor(pw/2), half=(CFG.READ_COLS-1)/2;
+  const bh=band.bot-band.top;
+  for(let b=0;b<CFG.N_BINS;b++){
+    // bin -> vertical position in band (bin 0 = low freq = bottom)
+    const f=b/(CFG.N_BINS-1);
+    const y=Math.round(band.bot - f*bh);
+    if(y<0||y>=ph){ amps[b]=0; continue; }
+    let sum=0,cnt=0;
+    for(let dx=-half;dx<=half;dx++){
+      const x=cx+dx; if(x<0||x>=pw) continue;
+      const i=(y*pw+x)*4;
+      const lum=(img[i]*0.299+img[i+1]*0.587+img[i+2]*0.114);
+      sum+=(255-lum)/255; cnt++;         // dark = loud
+    }
+    let a=cnt?sum/cnt:0;
+    a=Math.pow(a,CFG.GAMMA);
+    if(a<CFG.NOISE_GATE) a=0;
+    amps[b]=a;
+  }
+  node.port.postMessage({type:'amps', amps});
+}
+
+// ---- overlay: band edges + playhead ----------------------------------
+function drawOverlay(band,pw,ph){
+  const W=overlay.width=overlay.clientWidth, H=overlay.height=overlay.clientHeight;
+  octx.clearRect(0,0,W,H);
+  const sx=W/pw, sy=H/ph;
+  // playhead
+  octx.strokeStyle='rgba(51,225,160,.9)'; octx.lineWidth=2;
+  octx.beginPath(); octx.moveTo(W/2,0); octx.lineTo(W/2,H); octx.stroke();
+  if(band){
+    const t=band.top*sy, b=band.bot*sy;
+    octx.strokeStyle='rgba(51,225,160,.55)'; octx.lineWidth=1.5;
+    octx.setLineDash([6,6]);
+    octx.beginPath(); octx.moveTo(0,t); octx.lineTo(W,t);
+    octx.moveTo(0,b); octx.lineTo(W,b); octx.stroke();
+    octx.setLineDash([]);
+    octx.fillStyle='rgba(51,225,160,.08)';
+    octx.fillRect(0,t,W,b-t);
+  }
+}
+
+// ---- controls ---------------------------------------------------------
+startBtn.addEventListener('click', start);
+gainEl.addEventListener('input', ()=>{ if(node) node.port.postMessage({type:'gain',value:gainEl.value/100}); });
+freezeBtn.addEventListener('click', ()=>{
+  frozen=!frozen;
+  if(frozen){ /* frozenBand set from last good band */ }
+  freezeBtn.textContent = frozen ? 'Unfreeze' : 'Freeze band';
+  freezeBtn.classList.toggle('go', frozen);
+});
+// capture last good band for freeze
+const _sonify=sonify;
+sonify=function(img,pw,ph,band){ if(!frozen) frozenBand={top:band.top,bot:band.bot}; return _sonify(img,pw,ph,band); };
+</script>
+</body>
+</html>
