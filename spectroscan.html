@@ -89,9 +89,10 @@ const CFG = {
   SCALE: 'log',         // 'log' (musical) or 'lin'
   X_INSET: 0.10,        // ignore this fraction of width on each side (glare/edges)
   READ_COLS: 5,         // columns averaged around centre for the playhead
-  MARKER_DARK: 0.55,    // row is a marker if this fraction of width is dark
+  MARKER_DARK: 0.55,    // a row is part of a rail if this fraction of width is dark
+  MIN_BAND: 0.20,       // band must be at least this fraction of frame height
   DARK_FRAC: 0.45,      // adaptive: dark = below this fraction of frame's range
-  GRACE: 12,            // frames to hold last band after a lost lock (~0.2s)
+  GRACE: 8,             // frames to hold last band through a brief dropout
   GAMMA: 1.4,           // amplitude contrast (higher = more selective)
   NOISE_GATE: 0.05      // amplitudes below this are silenced
 };
@@ -112,6 +113,7 @@ const pctx = proc.getContext('2d', { willReadFrequently:true });
 
 let audioCtx, node, running=false, frozen=false, frozenBand=null;
 let lastBand=null, graceFrames=0;
+let prevProfile=null, dirSmooth=0;
 let binFreqs = new Float32Array(CFG.N_BINS);
 let amps = new Float32Array(CFG.N_BINS);
 
@@ -262,19 +264,24 @@ function loop(now){
       }
       darkFrac[y]=d/span;
     }
-    // marker rows = nearly full-width dark
-    const markers=[];
-    for(let y=0;y<ph;y++) if(darkFrac[y]>=CFG.MARKER_DARK) markers.push(y);
+    // marker rows = full-width dark (a rail crosses the whole slice)
+    const isRail=new Float32Array(ph);
+    for(let y=0;y<ph;y++) isRail[y]= darkFrac[y]>=CFG.MARKER_DARK ? 1 : 0;
+
+    // RAILS MODEL: user glides along two solid rails; every frame shows both.
+    // Top rail = first dark-row group from the top; bottom rail = first from
+    // the bottom; the frequency band is the clear span between them.
+    let topRail=-1, botRail=-1;
+    for(let y=0;y<ph;y++)          if(isRail[y]){ topRail=y; break; }
+    for(let y=ph-1;y>=0;y--)       if(isRail[y]){ botRail=y; break; }
+    // walk inward past the thickness of each rail to the band edge
+    let bandTop=topRail, bandBot=botRail;
+    while(bandTop<ph && isRail[bandTop]) bandTop++;   // skip below top rail
+    while(bandBot>=0  && isRail[bandBot]) bandBot--;   // skip above bottom rail
 
     let band=null;
-    if(markers.length>=2){
-      // biggest gap between consecutive marker rows = content band
-      let bestGap=0, top=-1, bot=-1;
-      for(let m=1;m<markers.length;m++){
-        const g=markers[m]-markers[m-1];
-        if(g>bestGap){ bestGap=g; top=markers[m-1]; bot=markers[m]; }
-      }
-      if(bestGap > ph*0.25){ band={top:top+1, bot:bot-1}; }
+    if(topRail>=0 && botRail>=0 && (bandBot-bandTop) > ph*CFG.MIN_BAND){
+      band={top:bandTop, bot:bandBot};
     }
     if(frozen && frozenBand) band=frozenBand;
 
@@ -283,9 +290,12 @@ function loop(now){
     else if(graceFrames>0 && lastBand){ band=lastBand; graceFrames--; }
 
     if(band){
+      // estimate sweep direction from horizontal shift of the band content
+      const dir=estimateDir(img,pw,band);
       sonify(img,pw,ph,band,lmin,lmax);
+      const arrow = dir>0.6?'▶ forward' : dir<-0.6?'◀ backward' : '• hold';
       statusEl.textContent = frozen ? 'band frozen'
-                            : (graceFrames<CFG.GRACE ? 'holding…' : 'code locked');
+                            : (graceFrames<CFG.GRACE ? 'holding… '+arrow : 'locked  '+arrow);
       statusEl.className='lock';
     }else{
       amps.fill(0);
@@ -300,6 +310,29 @@ function loop(now){
   frames++; fpsAcc+=now-last; last=now;
   if(fpsAcc>500){ fpsEl.textContent=Math.round(1000*frames/fpsAcc)+' fps'; frames=0; fpsAcc=0; }
   requestAnimationFrame(loop);
+}
+
+// estimate horizontal drift by correlating a mid-band luminance profile
+// against the previous frame. positive = content moving left = camera moving
+// right = forward playback.
+function estimateDir(img,pw,band){
+  const y=Math.round((band.top+band.bot)/2);
+  const prof=new Float32Array(pw);
+  for(let x=0;x<pw;x++){ const i=(y*pw+x)*4;
+    prof[x]=img[i]*0.299+img[i+1]*0.587+img[i+2]*0.114; }
+  let best=0,bestScore=Infinity;
+  if(prevProfile && prevProfile.length===pw){
+    for(let s=-6;s<=6;s++){                 // test small horizontal shifts
+      let sc=0,n=0;
+      for(let x=8;x<pw-8;x++){ const xs=x+s;
+        if(xs<0||xs>=pw)continue; const d=prof[x]-prevProfile[xs]; sc+=d*d; n++; }
+      sc/=Math.max(1,n);
+      if(sc<bestScore){ bestScore=sc; best=s; }
+    }
+  }
+  prevProfile=prof;
+  dirSmooth = dirSmooth*0.7 + best*0.3;      // smooth jitter
+  return dirSmooth;
 }
 
 function sonify(img,pw,ph,band,lmin,lmax){
