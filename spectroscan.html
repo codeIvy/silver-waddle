@@ -60,6 +60,7 @@
       <p>Point the rear camera at a marker-framed spectrogram. Keep both marker bars
          in view and sweep slowly left-to-right — the image plays as you move.</p>
       <button class="go" id="startBtn">Start camera</button>
+      <div id="ctxNote" style="font-size:10px;letter-spacing:.1em;color:var(--dim)"></div>
     </div>
   </div>
   <div id="bar">
@@ -88,10 +89,11 @@ const CFG = {
   SCALE: 'log',         // 'log' (musical) or 'lin'
   X_INSET: 0.10,        // ignore this fraction of width on each side (glare/edges)
   READ_COLS: 5,         // columns averaged around centre for the playhead
-  MARKER_DARK: 0.80,    // row is a marker if this fraction of width is dark
-  DARK_LEVEL: 110,      // pixel < this (0-255) counts as "dark"
-  GAMMA: 1.6,           // amplitude contrast (higher = more selective)
-  NOISE_GATE: 0.06      // amplitudes below this are silenced
+  MARKER_DARK: 0.55,    // row is a marker if this fraction of width is dark
+  DARK_FRAC: 0.45,      // adaptive: dark = below this fraction of frame's range
+  GRACE: 12,            // frames to hold last band after a lost lock (~0.2s)
+  GAMMA: 1.4,           // amplitude contrast (higher = more selective)
+  NOISE_GATE: 0.05      // amplitudes below this are silenced
 };
 
 const video   = document.getElementById('video');
@@ -109,6 +111,7 @@ const proc = document.createElement('canvas');
 const pctx = proc.getContext('2d', { willReadFrequently:true });
 
 let audioCtx, node, running=false, frozen=false, frozenBand=null;
+let lastBand=null, graceFrames=0;
 let binFreqs = new Float32Array(CFG.N_BINS);
 let amps = new Float32Array(CFG.N_BINS);
 
@@ -233,16 +236,29 @@ function loop(now){
     pctx.drawImage(video,0,0,pw,ph);
     const img=pctx.getImageData(0,0,pw,ph).data;
 
-    // --- per-row dark fraction across code width ---
+    // --- adaptive dark threshold from this frame's own range ---
     const x0=Math.floor(pw*CFG.X_INSET), x1=Math.ceil(pw*(1-CFG.X_INSET));
     const span=x1-x0;
+    let lmin=255, lmax=0;
+    for(let y=0;y<ph;y+=2){                     // sample every 2nd row for speed
+      let base=y*pw*4;
+      for(let x=x0;x<x1;x+=2){
+        const i=base+x*4;
+        const lum=(img[i]*0.299+img[i+1]*0.587+img[i+2]*0.114);
+        if(lum<lmin)lmin=lum; if(lum>lmax)lmax=lum;
+      }
+    }
+    // cutoff sits a fraction of the way up from darkest toward brightest
+    const darkCut = lmin + (lmax-lmin)*CFG.DARK_FRAC;
+
+    // --- per-row dark fraction across code width ---
     const darkFrac=new Float32Array(ph);
     for(let y=0;y<ph;y++){
       let d=0, base=y*pw*4;
       for(let x=x0;x<x1;x++){
         const i=base+x*4;
         const lum=(img[i]*0.299+img[i+1]*0.587+img[i+2]*0.114);
-        if(lum<CFG.DARK_LEVEL) d++;
+        if(lum<darkCut) d++;
       }
       darkFrac[y]=d/span;
     }
@@ -262,9 +278,14 @@ function loop(now){
     }
     if(frozen && frozenBand) band=frozenBand;
 
+    // --- sticky lock: hold last good band for a short grace period ---
+    if(band){ lastBand=band; graceFrames=CFG.GRACE; }
+    else if(graceFrames>0 && lastBand){ band=lastBand; graceFrames--; }
+
     if(band){
-      sonify(img,pw,ph,band);
-      statusEl.textContent = frozen ? 'band frozen' : 'code locked';
+      sonify(img,pw,ph,band,lmin,lmax);
+      statusEl.textContent = frozen ? 'band frozen'
+                            : (graceFrames<CFG.GRACE ? 'holding…' : 'code locked');
       statusEl.className='lock';
     }else{
       amps.fill(0);
@@ -281,9 +302,10 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 
-function sonify(img,pw,ph,band){
+function sonify(img,pw,ph,band,lmin,lmax){
   const cx=Math.floor(pw/2), half=(CFG.READ_COLS-1)/2;
   const bh=band.bot-band.top;
+  const rng=Math.max(1,(lmax-lmin));       // stretch contrast to frame's range
   for(let b=0;b<CFG.N_BINS;b++){
     // bin -> vertical position in band (bin 0 = low freq = bottom)
     const f=b/(CFG.N_BINS-1);
@@ -294,7 +316,7 @@ function sonify(img,pw,ph,band){
       const x=cx+dx; if(x<0||x>=pw) continue;
       const i=(y*pw+x)*4;
       const lum=(img[i]*0.299+img[i+1]*0.587+img[i+2]*0.114);
-      sum+=(255-lum)/255; cnt++;         // dark = loud
+      sum+=Math.min(1,Math.max(0,(lmax-lum)/rng)); cnt++;  // dark = loud, normalized
     }
     let a=cnt?sum/cnt:0;
     a=Math.pow(a,CFG.GAMMA);
@@ -324,6 +346,16 @@ function drawOverlay(band,pw,ph){
   }
 }
 
+// ---- context self-check on load ---------------------------------------
+(function(){
+  const ok = window.isSecureContext && !!navigator.mediaDevices?.getUserMedia;
+  const note=document.getElementById('ctxNote');
+  note.textContent = ok
+    ? 'secure context OK \u2022 '+location.protocol+'//'+location.host
+    : '\u26a0 NOT a secure context ('+location.protocol+') \u2014 needs https';
+  note.style.color = ok ? 'var(--accent)' : 'var(--warn)';
+})();
+
 // ---- controls ---------------------------------------------------------
 startBtn.addEventListener('click', start);
 gainEl.addEventListener('input', ()=>{ if(node) node.port.postMessage({type:'gain',value:gainEl.value/100}); });
@@ -335,7 +367,7 @@ freezeBtn.addEventListener('click', ()=>{
 });
 // capture last good band for freeze
 const _sonify=sonify;
-sonify=function(img,pw,ph,band){ if(!frozen) frozenBand={top:band.top,bot:band.bot}; return _sonify(img,pw,ph,band); };
+sonify=function(img,pw,ph,band,lmin,lmax){ if(!frozen) frozenBand={top:band.top,bot:band.bot}; return _sonify(img,pw,ph,band,lmin,lmax); };
 </script>
 </body>
 </html>
