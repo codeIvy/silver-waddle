@@ -1,0 +1,5 @@
+/home/sm/Repository/silver-waddle/phonopaper-web/target/release/deps/simd_helpers-d1c7d63920b3245e.d: /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/simd_helpers-0.1.0/src/lib.rs
+
+/home/sm/Repository/silver-waddle/phonopaper-web/target/release/deps/libsimd_helpers-d1c7d63920b3245e.so: /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/simd_helpers-0.1.0/src/lib.rs
+
+/home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/simd_helpers-0.1.0/src/lib.rs:

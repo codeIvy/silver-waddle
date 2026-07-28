@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sound Paper Encoder</title>
+<style>
+body{max-width:700px;margin:30px auto;padding:16px;background:#111;color:#fff;font:16px system-ui}
+button{font:inherit;padding:12px} canvas{width:100%;background:#fff;margin-top:20px}
+</style>
+<h1>Sound Paper Encoder <small>v0.1.0</small></h1>
+<p>Encoder Wasm binding is the next implementation step.</p>
+<button id="record">Record</button>
+<canvas id="output"></canvas>
+<script type="module">
+import init, { version } from "./pkg/phonopaper_web.js";
+await init();
+console.log("Wasm version", version());
+
+document.querySelector("#record").onclick = async () => {
+  alert("Microphone capture and PCM-to-image binding will be added next.");
+};
+</script>
+</html>

@@ -1,0 +1,14 @@
+/home/sm/Repository/silver-waddle/phonopaper-web/target/wasm32-unknown-unknown/release/deps/thiserror-f521352bd938c96a.d: /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/lib.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/aserror.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/display.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/var.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/private.rs /home/sm/Repository/silver-waddle/phonopaper-web/target/wasm32-unknown-unknown/release/build/thiserror-a0bfea4f60eaf15c/out/private.rs
+
+/home/sm/Repository/silver-waddle/phonopaper-web/target/wasm32-unknown-unknown/release/deps/libthiserror-f521352bd938c96a.rlib: /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/lib.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/aserror.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/display.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/var.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/private.rs /home/sm/Repository/silver-waddle/phonopaper-web/target/wasm32-unknown-unknown/release/build/thiserror-a0bfea4f60eaf15c/out/private.rs
+
+/home/sm/Repository/silver-waddle/phonopaper-web/target/wasm32-unknown-unknown/release/deps/libthiserror-f521352bd938c96a.rmeta: /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/lib.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/aserror.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/display.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/var.rs /home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/private.rs /home/sm/Repository/silver-waddle/phonopaper-web/target/wasm32-unknown-unknown/release/build/thiserror-a0bfea4f60eaf15c/out/private.rs
+
+/home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/lib.rs:
+/home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/aserror.rs:
+/home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/display.rs:
+/home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/var.rs:
+/home/sm/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.19/src/private.rs:
+/home/sm/Repository/silver-waddle/phonopaper-web/target/wasm32-unknown-unknown/release/build/thiserror-a0bfea4f60eaf15c/out/private.rs:
+
+# env-dep:OUT_DIR=/home/sm/Repository/silver-waddle/phonopaper-web/target/wasm32-unknown-unknown/release/build/thiserror-a0bfea4f60eaf15c/out
