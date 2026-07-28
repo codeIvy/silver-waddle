@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>PhonoPaper — Decode</title>
+<style>
+  :root{--bg:#0a0d10;--panel:#12181d;--line:#1e2731;--line2:#2a3742;--ink:#e8f0f4;
+    --dim:#6b7d88;--accent:#33e1a0;--warn:#ff5d5d;--mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--mono);overflow:hidden}
+  #stage{position:fixed;inset:0;display:flex;flex-direction:column}
+  #view{position:relative;flex:1;overflow:hidden;background:#000}
+  video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  #overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  #hud{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;justify-content:space-between;
+    align-items:flex-start;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  #hud .tag{color:var(--accent)}#build{position:absolute;top:42px;right:16px;font-size:10px;letter-spacing:.08em;color:var(--accent);border:1px solid var(--line2);padding:5px 7px;border-radius:3px;background:rgba(10,13,16,.72)}
+  #status{position:absolute;left:16px;bottom:14px;font-size:12px;letter-spacing:.05em}
+  #status.lock{color:var(--accent)} #status.seek{color:var(--warn)}
+  #bar{background:var(--panel);border-top:1px solid var(--line);
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center}
+  button{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:transparent;
+    color:var(--ink);border:1px solid var(--line2);border-radius:3px;padding:11px 10px}
+  button.go{border-color:var(--accent);color:var(--accent)}
+  button.on{background:var(--accent);color:#04140d;border-color:var(--accent)}
+  button:active{filter:brightness(1.3)} button:disabled{opacity:.35}
+  #vol{flex:1;display:flex;align-items:center;gap:8px;color:var(--dim);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+  input[type=range]{flex:1;accent-color:var(--accent);min-width:50px}
+  #splash{position:absolute;inset:0;background:var(--bg);z-index:5;display:flex;flex-direction:column;
+    justify-content:center;align-items:center;gap:16px;padding:32px;text-align:center}
+  #splash h1{margin:0;font-size:22px;letter-spacing:.2em;font-weight:500}
+  #splash h1 span{color:var(--accent)}
+  #splash p{margin:0;max-width:34ch;font-size:12px;line-height:1.7;color:var(--dim);letter-spacing:.03em}
+  #ctxNote{font-size:10px;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="view">
+    <video id="video" playsinline muted></video>
+    <canvas id="overlay"></canvas>
+    <div id="hud"><div><span class="tag">PHONO</span>PAPER · DECODE</div><div id="fps">–</div></div><div id="build">v0.3.0 · calibration</div>
+    <div id="status" class="seek">seeking markers…</div>
+    <div id="splash">
+      <h1>PHONO<span>PAPER</span></h1>
+      <p>Point the rear camera at a code, include both marker bands, and sweep slowly left → right.</p>
+      <button class="go" id="startBtn">Start camera</button>
+      <div id="ctxNote"></div>
+    </div>
+  </div>
+  <div id="bar">
+    <button id="invBtn" disabled>Invert</button>
+    <button id="freezeBtn" disabled>Freeze</button>
+    <div id="vol">Vol<input type="range" id="gain" min="0" max="100" value="65"></div>
+  </div>
+</div>
+<script>
+const FORMAT={
+  TOTAL_BINS:384,SEMI:12,MULTI:4,A4_BIN:252,A4_FREQ:440,
+  SYNTH_MIN_BIN:96,
+  SYNTH_MAX_BIN:336
+};
+
+const CFG={
+  PROC_W:720,
+  INVERT:false,
+  X_INSET:0.10,
+  READ_COLS:3,
+  DARK_FRAC:0.45,
+  GRACE:8,
+  GATE_LOW:0.10,
+  GATE_HIGH:0.72
+};
+
+const binFreq=b=>FORMAT.A4_FREQ*Math.pow(2,(FORMAT.A4_BIN-b)/(FORMAT.SEMI*FORMAT.MULTI));
+const binRowFrac=b=>(2*b+1)/(2*FORMAT.TOTAL_BINS);
+const EDGE_RATIO=19/39;
+const NBINS=FORMAT.SYNTH_MAX_BIN-FORMAT.SYNTH_MIN_BIN+1;
+const $=id=>document.getElementById(id);
+
+const video=$('video'),overlay=$('overlay'),octx=overlay.getContext('2d');
+const statusEl=$('status'),fpsEl=$('fps'),splash=$('splash'),startBtn=$('startBtn');
+const invBtn=$('invBtn'),freezeBtn=$('freezeBtn'),gainEl=$('gain');
+const proc=document.createElement('canvas');
+const pctx=proc.getContext('2d',{willReadFrequently:true});
+
+let audioCtx,node,running=false;
+let frozen=false,frozenBand=null,lastBand=null,graceFrames=0;
+let prevProfile=null,dirSmooth=0;
+const binFreqs=new Float32Array(NBINS);
+const binFrac=new Float32Array(NBINS);
+const amps=new Float32Array(NBINS);
+
+function buildGrid(){
+  for(let i=0;i<NBINS;i++){
+    const b=FORMAT.SYNTH_MIN_BIN+i;
+    binFreqs[i]=binFreq(b);
+    binFrac[i]=binRowFrac(b);
+  }
+}
+
+const workletCode=`
+class Additive extends AudioWorkletProcessor{
+  constructor(){
+    super();
+    this.N=0;
+    this.phase=null;
+    this.inc=null;
+    this.cur=null;
+    this.target=null;
+    this.gain=.5;
+    this.L=2048;
+    this.lut=new Float32Array(this.L+1);
+    for(let i=0;i<=this.L;i++)this.lut[i]=Math.sin(2*Math.PI*i/this.L);
+
+    this.port.onmessage=e=>{
+      const d=e.data;
+      if(d.type==='init'){
+        this.N=d.freqs.length;
+        this.phase=new Float32Array(this.N);
+        this.inc=new Float32Array(this.N);
+        this.cur=new Float32Array(this.N);
+        this.target=new Float32Array(this.N);
+        for(let k=0;k<this.N;k++)this.inc[k]=d.freqs[k]/sampleRate;
+      }else if(d.type==='amps'){
+        this.target.set(d.amps);
+      }else if(d.type==='gain'){
+        this.gain=d.value;
+      }
+    };
+  }
+
+  sn(p){
+    const x=p*this.L,i=x|0,fr=x-i;
+    return this.lut[i]+(this.lut[i+1]-this.lut[i])*fr;
+  }
+
+  process(_,outs){
+    const out=outs[0][0];
+    if(!this.N){out.fill(0);return true;}
+
+    let energy=0;
+    for(let k=0;k<this.N;k++){
+      this.cur[k]+=(this.target[k]-this.cur[k])*0.18;
+      energy+=this.cur[k]*this.cur[k];
+    }
+    const norm=energy>1e-8?Math.min(1,0.75/Math.sqrt(energy)):0;
+
+    for(let i=0;i<out.length;i++){
+      let a=0;
+      for(let k=0;k<this.N;k++){
+        let ph=this.phase[k]+this.inc[k];
+        ph-=ph|0;
+        this.phase[k]=ph;
+        a+=this.cur[k]*this.sn(ph);
+      }
+      out[i]=Math.tanh(a*norm*this.gain*2.1);
+    }
+    return true;
+  }
+}
+registerProcessor('additive',Additive);`;
+
+function fail(m){
+  statusEl.textContent=m;
+  statusEl.className='seek';
+  startBtn.textContent='Retry';
+  startBtn.disabled=false;
+}
+
+async function start(){
+  buildGrid();
+  startBtn.disabled=true;
+
+  if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){
+    fail('needs https or localhost');
+    return;
+  }
+
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({
+      audio:false,
+      video:{
+        facingMode:{ideal:'environment'},
+        width:{ideal:1920},
+        height:{ideal:1080},
+        frameRate:{ideal:30,max:30}
+      }
+    });
+    video.srcObject=st;
+    await video.play();
+  }catch(err){
+    const n=err&&err.name;
+    if(n==='NotAllowedError')fail('permission denied — allow camera and retry');
+    else if(n==='NotFoundError')fail('no camera found');
+    else if(n==='NotReadableError')fail('camera busy — close other apps');
+    else fail('camera error: '+(n||err));
+    return;
+  }
+
+  try{
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state!=='running')await audioCtx.resume();
+    if(!audioCtx.audioWorklet)throw new Error('AudioWorklet unavailable');
+    const url=URL.createObjectURL(new Blob([workletCode],{type:'application/javascript'}));
+    await audioCtx.audioWorklet.addModule(url);
+    URL.revokeObjectURL(url);
+  }catch(err){
+    fail('audio error: '+(err.message||err));
+    return;
+  }
+
+  node=new AudioWorkletNode(audioCtx,'additive',{outputChannelCount:[1]});
+  node.connect(audioCtx.destination);
+  node.port.postMessage({type:'init',freqs:binFreqs});
+  node.port.postMessage({type:'gain',value:gainEl.value/100});
+
+  splash.style.display='none';
+  invBtn.disabled=freezeBtn.disabled=false;
+  running=true;
+  requestAnimationFrame(loop);
+}
+
+function luma(img,pw,x,y){
+  x=Math.max(0,Math.min(pw-1,Math.round(x)));
+  y=Math.max(0,Math.round(y));
+  const i=(y*pw+x)*4;
+  return img[i]*.299+img[i+1]*.587+img[i+2]*.114;
+}
+
+function detectBand(img,pw,ph){
+  const x0=Math.floor(pw*CFG.X_INSET),x1=Math.ceil(pw*(1-CFG.X_INSET)),span=x1-x0;
+  let lmin=255,lmax=0;
+
+  for(let y=0;y<ph;y+=2){
+    const base=y*pw*4;
+    for(let x=x0;x<x1;x+=2){
+      const i=base+x*4;
+      const l=img[i]*.299+img[i+1]*.587+img[i+2]*.114;
+      if(l<lmin)lmin=l;
+      if(l>lmax)lmax=l;
+    }
+  }
+
+  const cut=lmin+(lmax-lmin)*CFG.DARK_FRAC;
+  const runs=[];
+  let y=0;
+
+  while(y<ph){
+    let d=0,base=y*pw*4;
+    for(let x=x0;x<x1;x++){
+      const i=base+x*4;
+      if(img[i]*.299+img[i+1]*.587+img[i+2]*.114<cut)d++;
+    }
+
+    if(d/span>=0.55){
+      const s=y;
+      while(y<ph){
+        let dd=0,b2=y*pw*4;
+        for(let x=x0;x<x1;x++){
+          const i=b2+x*4;
+          if(img[i]*.299+img[i+1]*.587+img[i+2]*.114<cut)dd++;
+        }
+        if(dd/span>=0.55)y++;else break;
+      }
+      runs.push({s,e:y-1,len:y-s,mid:(s+y-1)/2});
+    }else y++;
+  }
+
+  if(runs.length<2)return null;
+
+  let top=null,bot=null;
+  for(const r of runs){
+    if(r.mid<ph*.40&&(!top||r.len>top.len))top=r;
+    if(r.mid>ph*.60&&(!bot||r.len>bot.len))bot=r;
+  }
+
+  if(!top||!bot||bot.s<=top.e)return null;
+  const dataTop=top.e+EDGE_RATIO*top.len;
+  const dataBot=bot.s-EDGE_RATIO*bot.len;
+  if(dataBot-dataTop<ph*.15)return null;
+
+  return {
+    top:dataTop,
+    bot:dataBot,
+    blackTop:top.mid,
+    blackBot:bot.mid
+  };
+}
+
+function calibrate(img,pw,ph,band){
+  const cx=pw>>1;
+  let black=0,bc=0;
+
+  for(let dx=-10;dx<=10;dx+=2){
+    black+=luma(img,pw,cx+dx,band.blackTop);
+    black+=luma(img,pw,cx+dx,band.blackBot);
+    bc+=2;
+  }
+  black/=Math.max(1,bc);
+
+  const gap=Math.max(3,(band.bot-band.top)*.018);
+  let white=0,wc=0;
+  for(let dx=-10;dx<=10;dx+=2){
+    white+=luma(img,pw,cx+dx,band.top-gap);
+    white+=luma(img,pw,cx+dx,band.bot+gap);
+    wc+=2;
+  }
+  white/=Math.max(1,wc);
+
+  if(white<black+35){
+    black=20;
+    white=235;
+  }
+
+  return {black,white};
+}
+
+function sonify(img,pw,ph,band){
+  const cx=pw>>1;
+  const half=(CFG.READ_COLS-1)>>1;
+  const bh=band.bot-band.top;
+  const cal=calibrate(img,pw,ph,band);
+  const range=Math.max(35,cal.white-cal.black);
+
+  for(let k=0;k<NBINS;k++){
+    const y=Math.round(band.top+binFrac[k]*bh);
+    if(y<0||y>=ph){amps[k]=0;continue;}
+
+    let darkness=0,count=0;
+    for(let dx=-half;dx<=half;dx++){
+      const lum=luma(img,pw,cx+dx,y);
+      darkness+=(cal.white-lum)/range;
+      count++;
+    }
+
+    let stored=darkness/Math.max(1,count);
+    stored=Math.max(0,Math.min(1,stored));
+    if(CFG.INVERT)stored=1-stored;
+
+    let a=(stored-CFG.GATE_LOW)/(CFG.GATE_HIGH-CFG.GATE_LOW);
+    a=Math.max(0,Math.min(1,a));
+    amps[k]=a*a;
+  }
+
+  node.port.postMessage({type:'amps',amps});
+}
+
+let last=performance.now(),frames=0,fpsAcc=0;
+
+function loop(now){
+  if(!running)return;
+  const vw=video.videoWidth,vh=video.videoHeight;
+
+  if(vw){
+    const pw=CFG.PROC_W,ph=Math.round(pw*vh/vw);
+    if(proc.width!==pw||proc.height!==ph){
+      proc.width=pw;
+      proc.height=ph;
+    }
+
+    pctx.drawImage(video,0,0,pw,ph);
+    const img=pctx.getImageData(0,0,pw,ph).data;
+    let band=detectBand(img,pw,ph);
+
+    if(frozen&&frozenBand)band=frozenBand;
+    if(band&&!frozen)frozenBand={...band};
+
+    if(band){
+      lastBand=band;
+      graceFrames=CFG.GRACE;
+    }else if(graceFrames>0&&lastBand){
+      band=lastBand;
+      graceFrames--;
+    }
+
+    if(band){
+      const dir=estimateDir(img,pw,band);
+      sonify(img,pw,ph,band);
+      const arrow=dir<-.6?'▶ fwd':dir>.6?'◀ back':'• hold';
+      statusEl.textContent=(frozen?'frozen ':(graceFrames<CFG.GRACE?'holding ':'locked '))+arrow;
+      statusEl.className='lock';
+    }else{
+      amps.fill(0);
+      node.port.postMessage({type:'amps',amps});
+      statusEl.textContent='seeking markers…';
+      statusEl.className='seek';
+    }
+
+    drawOverlay(band,pw,ph);
+  }
+
+  frames++;
+  fpsAcc+=now-last;
+  last=now;
+  if(fpsAcc>500){
+    fpsEl.textContent=Math.round(1000*frames/fpsAcc)+' fps';
+    frames=0;
+    fpsAcc=0;
+  }
+  requestAnimationFrame(loop);
+}
+
+function estimateDir(img,pw,band){
+  const y=Math.round((band.top+band.bot)/2),prof=new Float32Array(pw);
+  for(let x=0;x<pw;x++)prof[x]=luma(img,pw,x,y);
+
+  let best=0,bs=Infinity;
+  if(prevProfile&&prevProfile.length===pw){
+    for(let s=-6;s<=6;s++){
+      let sc=0,n=0;
+      for(let x=8;x<pw-8;x++){
+        const xs=x+s;
+        if(xs<0||xs>=pw)continue;
+        const d=prof[x]-prevProfile[xs];
+        sc+=d*d;
+        n++;
+      }
+      sc/=Math.max(1,n);
+      if(sc<bs){bs=sc;best=s;}
+    }
+  }
+
+  prevProfile=prof;
+  dirSmooth=dirSmooth*.7+best*.3;
+  return dirSmooth;
+}
+
+function drawOverlay(band,pw,ph){
+  const W=overlay.width=overlay.clientWidth,H=overlay.height=overlay.clientHeight;
+  octx.clearRect(0,0,W,H);
+  octx.strokeStyle='rgba(51,225,160,.9)';
+  octx.lineWidth=2;
+  octx.beginPath();
+  octx.moveTo(W/2,0);
+  octx.lineTo(W/2,H);
+  octx.stroke();
+
+  if(band){
+    const sy=H/ph,t=band.top*sy,b=band.bot*sy;
+    octx.strokeStyle='rgba(51,225,160,.55)';
+    octx.lineWidth=1.5;
+    octx.setLineDash([6,6]);
+    octx.beginPath();
+    octx.moveTo(0,t);octx.lineTo(W,t);
+    octx.moveTo(0,b);octx.lineTo(W,b);
+    octx.stroke();
+    octx.setLineDash([]);
+    octx.fillStyle='rgba(51,225,160,.08)';
+    octx.fillRect(0,t,W,b-t);
+  }
+}
+
+(function(){
+  const ok=window.isSecureContext&&!!navigator.mediaDevices?.getUserMedia;
+  const n=$('ctxNote');
+  n.textContent=ok?'secure context OK':'⚠ needs HTTPS';
+  n.style.color=ok?'var(--accent)':'var(--warn)';
+})();
+
+startBtn.addEventListener('click',start);
+gainEl.addEventListener('input',()=>{
+  if(node)node.port.postMessage({type:'gain',value:gainEl.value/100});
+});
+invBtn.addEventListener('click',()=>{
+  CFG.INVERT=!CFG.INVERT;
+  invBtn.classList.toggle('on',CFG.INVERT);
+});
+freezeBtn.addEventListener('click',()=>{
+  frozen=!frozen;
+  freezeBtn.textContent=frozen?'Unfreeze':'Freeze';
+  freezeBtn.classList.toggle('on',frozen);
+});
+</script>
+</body>
+</html>
