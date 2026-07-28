@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>SpectroSweep — Decode</title>
+<style>
+  :root{
+    --bg:#0a0d10; --panel:#12181d; --line:#1e2731; --line2:#2a3742;
+    --ink:#e8f0f4; --dim:#6b7d88; --accent:#33e1a0; --warn:#ff5d5d;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:var(--mono);overflow:hidden}
+  #stage{position:fixed;inset:0;display:flex;flex-direction:column}
+  #view{position:relative;flex:1;overflow:hidden;background:#000}
+  video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  #overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  #hud{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;
+    justify-content:space-between;align-items:flex-start;font-size:11px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  #hud .tag{color:var(--accent)}
+  #status{position:absolute;left:16px;bottom:14px;font-size:12px;letter-spacing:.05em}
+  #status.lock{color:var(--accent)} #status.seek{color:var(--warn)}
+
+  #bar{background:var(--panel);border-top:1px solid var(--line);
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+    display:flex;gap:8px;align-items:center}
+  button{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    background:transparent;color:var(--ink);border:1px solid var(--line2);border-radius:3px;padding:11px 12px}
+  button.go{border-color:var(--accent);color:var(--accent)}
+  button.on{background:var(--accent);color:#04140d;border-color:var(--accent)}
+  button:active{filter:brightness(1.3)} button:disabled{opacity:.35}
+  #vol{flex:1;display:flex;align-items:center;gap:8px;color:var(--dim);font-size:10px;
+    letter-spacing:.1em;text-transform:uppercase}
+  input[type=range]{flex:1;accent-color:var(--accent);min-width:56px}
+
+  #tune{position:absolute;left:0;right:0;bottom:0;background:var(--panel);
+    border-top:1px solid var(--accent);padding:16px 16px calc(16px + env(safe-area-inset-bottom));
+    transform:translateY(110%);transition:transform .22s ease;z-index:4}
+  #tune.open{transform:translateY(0)}
+  #tune h3{margin:0 0 12px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent);font-weight:500}
+  .row{display:flex;align-items:center;gap:12px;margin:14px 0;font-size:11px;color:var(--dim);
+    letter-spacing:.06em}
+  .row label{width:96px;text-transform:uppercase}
+  .row .val{width:74px;text-align:right;color:var(--ink)}
+  #tuneClose{width:100%;margin-top:6px}
+
+  #splash{position:absolute;inset:0;background:var(--bg);z-index:5;display:flex;
+    flex-direction:column;justify-content:center;align-items:center;gap:16px;
+    padding:32px;text-align:center}
+  #splash h1{margin:0;font-size:22px;letter-spacing:.22em;font-weight:500}
+  #splash h1 span{color:var(--accent)}
+  #splash p{margin:0;max-width:34ch;font-size:12px;line-height:1.7;color:var(--dim);letter-spacing:.03em}
+  #ctxNote{font-size:10px;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="view">
+    <video id="video" playsinline muted></video>
+    <canvas id="overlay"></canvas>
+    <div id="hud"><div><span class="tag">SPECTRO</span>SWEEP · DECODE</div><div id="fps">–</div></div>
+    <div id="status" class="seek">seeking rails…</div>
+
+    <div id="tune">
+      <h3>Tuning — frequency band</h3>
+      <div class="row"><label>Low (F_LOW)</label>
+        <input type="range" id="tLow" min="40" max="300" step="1" value="80">
+        <span class="val" id="tLowV">80 Hz</span></div>
+      <div class="row"><label>High (F_HIGH)</label>
+        <input type="range" id="tHigh" min="2000" max="8000" step="50" value="5000">
+        <span class="val" id="tHighV">5000 Hz</span></div>
+      <div class="row"><label>Contrast γ</label>
+        <input type="range" id="tGam" min="0.6" max="3" step="0.1" value="1.2">
+        <span class="val" id="tGamV">1.2</span></div>
+      <button class="go" id="tuneClose">Done</button>
+    </div>
+
+    <div id="splash">
+      <h1>SPECTRO<span>SWEEP</span></h1>
+      <p>Point the rear camera at a code and sweep slowly left → right along the two rails.
+         The image plays as you move.</p>
+      <button class="go" id="startBtn">Start camera</button>
+      <div id="ctxNote"></div>
+    </div>
+  </div>
+
+  <div id="bar">
+    <button id="invBtn" disabled>Invert</button>
+    <button id="freezeBtn" disabled>Freeze</button>
+    <button id="tuneBtn" disabled>Tune</button>
+    <div id="vol">Vol<input type="range" id="gain" min="0" max="100" value="60"></div>
+  </div>
+</div>
+
+<script>
+/* ============ SpectroSweep Decoder ============
+   Camera → detect the two rails → read the centre "playhead" column →
+   additive resynthesis. Shared format contract (MUST match the encoder): */
+const FORMAT = {
+  F_LOW: 80, F_HIGH: 5000, LOG_SCALE: true,
+  BAND_PX: 512, RAIL_PX: 24, GUARD_PX: 8, MARGIN_PX: 32,
+  COLS_PER_SEC: 100, COL_PX: 2,
+  DB_FLOOR: -55, GAMMA: 0.8, SAMPLE_RATE: 16000
+};
+/* decoder-only runtime settings */
+const CFG = {
+  PROC_W: 300,        // processing-canvas width (px)
+  N_OSC: 192,         // oscillators (voice intelligibility); lower if it stutters
+  GAMMA: 1.2,         // read-side contrast on darkness
+  INVERT: false,      // false: dark = loud (matches encoder)
+  X_INSET: 0.10, READ_COLS: 5,
+  MARKER_DARK: 0.55, MIN_BAND: 0.20, DARK_FRAC: 0.45,
+  GRACE: 8, NOISE_GATE: 0.05
+};
+let F_LOW=FORMAT.F_LOW, F_HIGH=FORMAT.F_HIGH;
+
+const $=id=>document.getElementById(id);
+const video=$('video'), overlay=$('overlay'), octx=overlay.getContext('2d');
+const statusEl=$('status'), fpsEl=$('fps'), splash=$('splash'), startBtn=$('startBtn');
+const invBtn=$('invBtn'), freezeBtn=$('freezeBtn'), tuneBtn=$('tuneBtn'), tune=$('tune'), gainEl=$('gain');
+const proc=document.createElement('canvas');
+const pctx=proc.getContext('2d',{willReadFrequently:true});
+
+let audioCtx,node,running=false;
+let frozen=false, frozenBand=null, lastBand=null, graceFrames=0;
+let prevProfile=null, dirSmooth=0;
+let binFreqs=new Float32Array(CFG.N_OSC);
+let amps=new Float32Array(CFG.N_OSC);
+
+/* log frequency for oscillator i: 0=low(F_LOW) .. 1=high(F_HIGH) — inverse of encoder */
+function buildFreqs(){
+  const ratio=F_HIGH/F_LOW;
+  for(let i=0;i<CFG.N_OSC;i++){ const f=i/(CFG.N_OSC-1);
+    binFreqs[i]=F_LOW*Math.pow(ratio,f); }
+  if(node) node.port.postMessage({type:'init',freqs:binFreqs});
+}
+
+const workletCode=`
+class Additive extends AudioWorkletProcessor{
+  constructor(){super();
+    this.N=0;this.freqs=null;this.phase=null;this.cur=null;this.target=null;this.gain=.5;
+    this.L=2048;this.lut=new Float32Array(this.L+1);
+    for(let i=0;i<=this.L;i++)this.lut[i]=Math.sin(2*Math.PI*i/this.L);
+    this.port.onmessage=e=>{const d=e.data;
+      if(d.type==='init'){this.N=d.freqs.length;this.freqs=d.freqs;
+        this.phase=new Float32Array(this.N);this.cur=new Float32Array(this.N);this.target=new Float32Array(this.N);}
+      else if(d.type==='amps')this.target.set(d.amps);
+      else if(d.type==='gain')this.gain=d.value;};
+  }
+  sn(p){const x=p*this.L,i=x|0,fr=x-i;return this.lut[i]+(this.lut[i+1]-this.lut[i])*fr;}
+  process(_,outs){const out=outs[0][0];if(!this.N){out.fill(0);return true;}
+    const sr=sampleRate,n=out.length,inc=new Float32Array(this.N);
+    for(let k=0;k<this.N;k++)inc[k]=this.freqs[k]/sr;
+    for(let k=0;k<this.N;k++)this.cur[k]+=(this.target[k]-this.cur[k])*0.15;
+    let s=0;for(let k=0;k<this.N;k++)s+=this.cur[k];
+    const norm=s>1?1/Math.sqrt(s):1;
+    for(let i=0;i<n;i++){let a=0;
+      for(let k=0;k<this.N;k++){let ph=this.phase[k]+inc[k];ph-=ph|0;this.phase[k]=ph;a+=this.cur[k]*this.sn(ph);}
+      out[i]=Math.tanh(a*norm*this.gain*2.2);}
+    return true;}
+}
+registerProcessor('additive',Additive);`;
+
+function fail(m){statusEl.textContent=m;statusEl.className='seek';startBtn.textContent='Retry';startBtn.disabled=false;}
+
+async function start(){
+  buildFreqs(); startBtn.disabled=true;
+  if(!window.isSecureContext || !navigator.mediaDevices?.getUserMedia){
+    fail('needs https or localhost — serve the file, don\u2019t open it directly');return;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:false,
+      video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+    video.srcObject=stream; await video.play();
+  }catch(err){const n=err&&err.name;
+    if(n==='NotAllowedError')fail('permission denied — allow camera and retry');
+    else if(n==='NotFoundError')fail('no camera found');
+    else if(n==='NotReadableError')fail('camera busy — close other apps');
+    else fail('camera error: '+(n||err)); return;}
+
+  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  const url=URL.createObjectURL(new Blob([workletCode],{type:'application/javascript'}));
+  await audioCtx.audioWorklet.addModule(url);
+  node=new AudioWorkletNode(audioCtx,'additive',{outputChannelCount:[1]});
+  node.connect(audioCtx.destination);
+  node.port.postMessage({type:'init',freqs:binFreqs});
+  node.port.postMessage({type:'gain',value:gainEl.value/100});
+  if(audioCtx.state!=='running') await audioCtx.resume();
+
+  splash.style.display='none';
+  invBtn.disabled=freezeBtn.disabled=tuneBtn.disabled=false;
+  running=true; requestAnimationFrame(loop);
+}
+
+let last=performance.now(),frames=0,fpsAcc=0;
+function loop(now){
+  if(!running)return;
+  const vw=video.videoWidth,vh=video.videoHeight;
+  if(vw){
+    const pw=CFG.PROC_W,ph=Math.round(pw*vh/vw);
+    if(proc.width!==pw){proc.width=pw;proc.height=ph;}
+    pctx.drawImage(video,0,0,pw,ph);
+    const img=pctx.getImageData(0,0,pw,ph).data;
+
+    const x0=Math.floor(pw*CFG.X_INSET),x1=Math.ceil(pw*(1-CFG.X_INSET)),span=x1-x0;
+    let lmin=255,lmax=0;
+    for(let y=0;y<ph;y+=2){const b=y*pw*4;
+      for(let x=x0;x<x1;x+=2){const i=b+x*4;
+        const l=img[i]*.299+img[i+1]*.587+img[i+2]*.114;
+        if(l<lmin)lmin=l; if(l>lmax)lmax=l;}}
+    const darkCut=lmin+(lmax-lmin)*CFG.DARK_FRAC;
+
+    const isRail=new Uint8Array(ph);
+    for(let y=0;y<ph;y++){let d=0,b=y*pw*4;
+      for(let x=x0;x<x1;x++){const i=b+x*4;
+        const l=img[i]*.299+img[i+1]*.587+img[i+2]*.114;
+        if(l<darkCut)d++;}
+      if(d/span>=CFG.MARKER_DARK)isRail[y]=1;}
+
+    let tr=-1,br=-1;
+    for(let y=0;y<ph;y++) if(isRail[y]){tr=y;break;}
+    for(let y=ph-1;y>=0;y--) if(isRail[y]){br=y;break;}
+    let bt=tr,bb=br;
+    while(bt<ph&&isRail[bt])bt++;
+    while(bb>=0&&isRail[bb])bb--;
+
+    let band=null;
+    if(tr>=0&&br>=0&&(bb-bt)>ph*CFG.MIN_BAND) band={top:bt,bot:bb};
+    if(frozen&&frozenBand) band=frozenBand;
+    if(band&&!frozen){frozenBand={top:band.top,bot:band.bot};}
+    if(band){lastBand=band;graceFrames=CFG.GRACE;}
+    else if(graceFrames>0&&lastBand){band=lastBand;graceFrames--;}
+
+    if(band){
+      const dir=estimateDir(img,pw,band);
+      sonify(img,pw,ph,band,lmin,lmax);
+      const arrow=dir<-0.6?'\u25b6 fwd':dir>0.6?'\u25c0 back':'\u2022 hold';
+      statusEl.textContent=(frozen?'frozen ':(graceFrames<CFG.GRACE?'holding ':'locked '))+arrow;
+      statusEl.className='lock';
+    }else{
+      amps.fill(0); node.port.postMessage({type:'amps',amps});
+      statusEl.textContent='seeking rails…'; statusEl.className='seek';
+    }
+    drawOverlay(band,pw,ph);
+  }
+  frames++;fpsAcc+=now-last;last=now;
+  if(fpsAcc>500){fpsEl.textContent=Math.round(1000*frames/fpsAcc)+' fps';frames=0;fpsAcc=0;}
+  requestAnimationFrame(loop);
+}
+
+/* read the playhead column; row→freq uses the SAME log mapping as the encoder */
+function sonify(img,pw,ph,band,lmin,lmax){
+  const cx=(pw>>1),half=(CFG.READ_COLS-1)/2,bh=band.bot-band.top,rng=Math.max(1,lmax-lmin);
+  for(let b=0;b<CFG.N_OSC;b++){
+    const f=b/(CFG.N_OSC-1);                 // 0 low(bottom) .. 1 high(top)
+    const y=Math.round(band.bot - f*bh);     // bottom = low freq
+    if(y<0||y>=ph){amps[b]=0;continue;}
+    let sum=0,cnt=0;
+    for(let dx=-half;dx<=half;dx++){const x=cx+dx;if(x<0||x>=pw)continue;
+      const i=(y*pw+x)*4;
+      const l=img[i]*.299+img[i+1]*.587+img[i+2]*.114;
+      let v=(lmax-l)/rng;                      // dark = loud, normalised
+      if(CFG.INVERT)v=1-v;
+      sum+=v<0?0:v>1?1:v; cnt++;}
+    let a=cnt?sum/cnt:0; a=Math.pow(a,CFG.GAMMA);
+    if(a<CFG.NOISE_GATE)a=0; amps[b]=a;
+  }
+  node.port.postMessage({type:'amps',amps});
+}
+
+function estimateDir(img,pw,band){
+  const y=(band.top+band.bot)>>1,prof=new Float32Array(pw);
+  for(let x=0;x<pw;x++){const i=(y*pw+x)*4;prof[x]=img[i]*.299+img[i+1]*.587+img[i+2]*.114;}
+  let best=0,bs=Infinity;
+  if(prevProfile&&prevProfile.length===pw){
+    for(let s=-6;s<=6;s++){let sc=0,n=0;
+      for(let x=8;x<pw-8;x++){const xs=x+s;if(xs<0||xs>=pw)continue;
+        const d=prof[x]-prevProfile[xs];sc+=d*d;n++;}
+      sc/=Math.max(1,n); if(sc<bs){bs=sc;best=s;}}}
+  prevProfile=prof; dirSmooth=dirSmooth*.7+best*.3; return dirSmooth;
+}
+
+function drawOverlay(band,pw,ph){
+  const W=overlay.width=overlay.clientWidth,H=overlay.height=overlay.clientHeight;
+  octx.clearRect(0,0,W,H);
+  octx.strokeStyle='rgba(51,225,160,.9)';octx.lineWidth=2;
+  octx.beginPath();octx.moveTo(W/2,0);octx.lineTo(W/2,H);octx.stroke();
+  if(band){const sy=H/ph,t=band.top*sy,b=band.bot*sy;
+    octx.strokeStyle='rgba(51,225,160,.55)';octx.lineWidth=1.5;octx.setLineDash([6,6]);
+    octx.beginPath();octx.moveTo(0,t);octx.lineTo(W,t);octx.moveTo(0,b);octx.lineTo(W,b);octx.stroke();
+    octx.setLineDash([]);octx.fillStyle='rgba(51,225,160,.08)';octx.fillRect(0,t,W,b-t);}
+}
+
+(function(){const ok=window.isSecureContext&&!!navigator.mediaDevices?.getUserMedia;
+  const n=$('ctxNote');
+  n.textContent=ok?'secure context OK':'\u26a0 NOT secure ('+location.protocol+') — needs https';
+  n.style.color=ok?'var(--accent)':'var(--warn)';})();
+
+startBtn.addEventListener('click',start);
+gainEl.addEventListener('input',()=>{if(node)node.port.postMessage({type:'gain',value:gainEl.value/100});});
+invBtn.addEventListener('click',()=>{CFG.INVERT=!CFG.INVERT;invBtn.classList.toggle('on',CFG.INVERT);});
+freezeBtn.addEventListener('click',()=>{frozen=!frozen;
+  freezeBtn.textContent=frozen?'Unfreeze':'Freeze';freezeBtn.classList.toggle('on',frozen);});
+
+function refreshTune(){$('tLowV').textContent=Math.round(F_LOW)+' Hz';
+  $('tHighV').textContent=Math.round(F_HIGH)+' Hz'; $('tGamV').textContent=CFG.GAMMA.toFixed(1);}
+tuneBtn.addEventListener('click',()=>{tune.classList.add('open');refreshTune();});
+$('tuneClose').addEventListener('click',()=>tune.classList.remove('open'));
+$('tLow').addEventListener('input',e=>{F_LOW=+e.target.value;buildFreqs();refreshTune();});
+$('tHigh').addEventListener('input',e=>{F_HIGH=+e.target.value;buildFreqs();refreshTune();});
+$('tGam').addEventListener('input',e=>{CFG.GAMMA=+e.target.value;refreshTune();});
+</script>
+</body>
+</html>
