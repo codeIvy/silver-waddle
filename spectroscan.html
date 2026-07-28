@@ -71,11 +71,11 @@
     <div id="tune">
       <h3>Tuning — ANS scale</h3>
       <div class="row"><label>Lowest freq</label>
-        <input type="range" id="tLow" min="27" max="220" step="1" value="55">
-        <span class="val" id="tLowV">55 Hz</span></div>
+        <input type="range" id="tLow" min="12" max="120" step="0.05" value="16.35">
+        <span class="val" id="tLowV">16.35 Hz</span></div>
       <div class="row"><label>Octaves</label>
-        <input type="range" id="tOct" min="3" max="8" step="0.1" value="6">
-        <span class="val" id="tOctV">6.0</span></div>
+        <input type="range" id="tOct" min="4" max="9" step="0.05" value="7.75">
+        <span class="val" id="tOctV">7.75</span></div>
       <div class="row"><label>Top freq</label>
         <span class="val" id="tTop" style="width:100%;text-align:left;color:var(--accent)">–</span></div>
       <div class="row"><label>Contrast γ</label>
@@ -116,8 +116,8 @@
 const CFG = {
   PROC_W: 300,          // processing-canvas width (px); lower = faster
   N_BINS: 128,          // additive oscillators; lower if audio stutters
-  LOWEST_FREQ: 55,      // Hz at the bottom rail  (ANS LOWEST_FREQ)
-  OCTAVES: 6,           // octaves spanned bottom->top (ANS OCTAVES)
+  LOWEST_FREQ: 16.35,   // Hz at bottom rail = C0, extracted from boot.pixicode
+  OCTAVES: 7.75,        // spans C0..~3.5kHz (top immediate ~3493 Hz in bytecode)
   GAMMA: 1.4,           // amplitude contrast
   INVERT: false,        // false: dark=loud (default). true: bright=loud
   X_INSET: 0.10,        // ignore this fraction of width each side
@@ -321,7 +321,7 @@ invBtn.addEventListener('click',()=>{CFG.INVERT=!CFG.INVERT;invBtn.classList.tog
 freezeBtn.addEventListener('click',()=>{frozen=!frozen;
   freezeBtn.textContent=frozen?'Unfreeze':'Freeze';freezeBtn.classList.toggle('on',frozen);});
 
-function refreshTune(){$('tLowV').textContent=CFG.LOWEST_FREQ+' Hz';
+function refreshTune(){$('tLowV').textContent=CFG.LOWEST_FREQ.toFixed(2)+' Hz';
   $('tOctV').textContent=CFG.OCTAVES.toFixed(1);
   $('tTop').textContent=Math.round(topFreq())+' Hz';
   $('tGamV').textContent=CFG.GAMMA.toFixed(1);}
