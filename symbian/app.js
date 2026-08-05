@@ -36,13 +36,25 @@
     view.innerHTML=`<div class="reader-head"><h1>${esc(mail.subject)}</h1><div class="reader-meta"><b>Від:</b> ${esc(mail.from)}<br>${esc(mail.address)}<br><b>Надіслано:</b> ${esc(mail.date)} ${esc(mail.time)}</div></div><div class="reader-body">${mail.body.map(p=>`<p>${esc(p)}</p>`).join("")}</div>`;
   }
   function maps(){
-    if(data.mapsUrl){window.location.href=data.mapsUrl;return}
     screen="maps";setChrome("Карти","☰","Готово");
-    view.innerHTML='<div class="dialog-view"><div class="dialog-box"><div class="dialog-icon">⌖</div><h2>Посилання не налаштовано</h2><p>Додайте адресу Google Maps у <b>symbian/config.js</b>.</p></div></div>';
+    if(!data.mapsEmbedUrl){
+      view.innerHTML='<div class="dialog-view"><div class="dialog-box"><div class="dialog-icon">⌖</div><h2>Посилання не налаштовано</h2><p>Додайте адресу Google Maps у <b>symbian/config.js</b>.</p></div></div>';
+      return;
+    }
+    view.innerHTML=`<div class="map-view" id="map-view"><iframe class="map-frame" src="${esc(data.mapsEmbedUrl)}" title="Карта операції R-17" loading="eager" allowfullscreen></iframe><button class="map-fullscreen" data-map-fullscreen>⛶ На весь екран</button></div>`;
   }
   function back(){if(screen==="locked")showToast("Екстрені виклики недоступні");else if(screen==="message")inbox();else if(screen!=="home")home();else lock()}
   view.addEventListener("submit",event=>{if(event.target.id!=="unlock-form")return;event.preventDefault();const input=document.querySelector("#password-input");if(input.value.trim().toLowerCase()===String(data.password).toLowerCase())home();else{document.querySelector("#lock-error").textContent="Неправильний пароль";input.value="";input.focus()}});
-  view.addEventListener("click",event=>{const app=event.target.closest("[data-app]");const mail=event.target.closest("[data-message]");if(mail)message(mail.dataset.message);else if(app?.dataset.app==="mail")inbox();else if(app?.dataset.app==="maps")maps();else if(app?.dataset.app==="calls")calls();else if(app)showToast("Функція недоступна")});
+  view.addEventListener("click",event=>{
+    const fullscreen=event.target.closest("[data-map-fullscreen]");
+    if(fullscreen){
+      const mapView=document.querySelector("#map-view");
+      if(mapView?.requestFullscreen)mapView.requestFullscreen().catch(()=>window.open(data.mapsEmbedUrl,"_blank","noopener"));
+      else window.open(data.mapsEmbedUrl,"_blank","noopener");
+      return;
+    }
+    const app=event.target.closest("[data-app]");const mail=event.target.closest("[data-message]");if(mail)message(mail.dataset.message);else if(app?.dataset.app==="mail")inbox();else if(app?.dataset.app==="maps")maps();else if(app?.dataset.app==="calls")calls();else if(app)showToast("Функція недоступна")
+  });
   right.addEventListener("click",back);left.addEventListener("click",()=>showToast(screen==="message"?"Відповідь недоступна — немає мережі":"Немає доступних параметрів"));
   document.addEventListener("keydown",event=>{if(event.key==="Escape"||event.key==="Backspace")back()});
   lock();
