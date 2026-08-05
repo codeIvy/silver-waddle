@@ -38,7 +38,7 @@
   function maps(){
     screen="maps";setChrome("Карти","☰","Готово");
     if(!data.mapsEmbedUrl){
-      view.innerHTML='<div class="dialog-view"><div class="dialog-box"><div class="dialog-icon">⌖</div><h2>Посилання не налаштовано</h2><p>Додайте адресу Google Maps у <b>symbian/config.js</b>.</p></div></div>';
+      view.innerHTML='<div class="dialog-view"><div class="dialog-box"><div class="dialog-icon">⌖</div><h2>Посилання не налаштовано</h2><p>Адресу карти не знайдено.</p></div></div>';
       return;
     }
     view.innerHTML=`<div class="map-view" id="map-view"><iframe class="map-frame" src="${esc(data.mapsEmbedUrl)}" title="Карта операції R-17" loading="eager" allowfullscreen></iframe><button class="map-fullscreen" data-map-fullscreen>⛶ На весь екран</button></div>`;
