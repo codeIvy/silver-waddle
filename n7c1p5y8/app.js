@@ -43,7 +43,7 @@
     if (!message) return;
     state.selectedId = id;
     message.unread = false;
-    els.reader.innerHTML = `<header class="message-head"><h1 class="message-subject">${escapeHtml(message.subject)}</h1><div class="header-row"><b>Від:</b><span>${escapeHtml(message.from)} &lt;${escapeHtml(message.email)}&gt;</span></div><div class="header-row"><b>Кому:</b><span>${escapeHtml(message.to)}</span></div><div class="header-row"><b>Дата:</b><span>${escapeHtml(message.date)}</span></div>${message.attachment ? `<div class="attachment">📎 ${escapeHtml(message.attachment)}</div>` : ""}</header><div class="message-body">${message.body.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join("")}<div class="security-note">Це повідомлення та вкладення призначені лише для авторизованого персоналу Umbrella Europe. Несанкціоноване поширення заборонено.</div></div>`;
+    els.reader.innerHTML = `<header class="message-head"><h1 class="message-subject">${escapeHtml(message.subject)}</h1><div class="header-row"><b>Від:</b><span>${escapeHtml(message.from)} &lt;${escapeHtml(message.email)}&gt;</span></div><div class="header-row"><b>Кому:</b><span>${escapeHtml(message.to)}</span></div><div class="header-row"><b>Дата:</b><span>${escapeHtml(message.date)}</span></div>${message.attachment ? `<div class="attachment">📎 ${escapeHtml(message.attachment)}</div>` : ""}</header><div class="message-body">${message.body.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join("")}<div class="security-note">Це повідомлення та вкладення призначені лише для авторизованого персоналу комплексу VAL-04. Несанкціоноване поширення заборонено.</div></div>`;
     els.status.textContent = `Повідомлення від: ${message.email}`;
     renderFolders(); renderList();
   }

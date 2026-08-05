@@ -8,7 +8,7 @@
 window.MAILBOX_DATA = {
   account: {
     owner: "Марта Веласкес",
-    address: "m.velasquez@umbrella-eu.net",
+    address: "m.velasquez@val04.es",
     lastSync: "11.10.2003  23:48"
   },
   messages: [
@@ -16,8 +16,8 @@ window.MAILBOX_DATA = {
       id: "m-001",
       folder: "inbox",
       from: "Д-р Е. Салазар",
-      email: "esalazar@umbrella-eu.net",
-      to: "Марта Веласкес <m.velasquez@umbrella-eu.net>",
+      email: "esalazar@val04.es",
+      to: "Марта Веласкес <m.velasquez@val04.es>",
       subject: "RE: зразки з рівня B4",
       date: "11.10.2003  23:41",
       timestamp: "2003-10-11T23:41:00",
@@ -36,7 +36,7 @@ window.MAILBOX_DATA = {
       id: "m-002",
       folder: "inbox",
       from: "СИСТЕМА БЕЗПЕКИ",
-      email: "security-daemon@umbrella-eu.net",
+      email: "security-daemon@val04.es",
       to: "Усі співробітники комплексу VAL-04",
       subject: "[ТЕРМІНОВО] Порушення герметичності",
       date: "11.10.2003  23:17",
@@ -55,7 +55,7 @@ window.MAILBOX_DATA = {
       folder: "inbox",
       from: "Лукас Ортеґа",
       email: "l.ortega@valdescurro.es",
-      to: "Марта Веласкес <m.velasquez@umbrella-eu.net>",
+      to: "Марта Веласкес <m.velasquez@val04.es>",
       subject: "Ти чуєш сирени?",
       date: "11.10.2003  22:56",
       timestamp: "2003-10-11T22:56:00",
@@ -72,7 +72,7 @@ window.MAILBOX_DATA = {
       id: "m-004",
       folder: "inbox",
       from: "Адміністрація VAL-04",
-      email: "admin@umbrella-eu.net",
+      email: "admin@val04.es",
       to: "Відділ мікології",
       subject: "Перенесення планової перевірки",
       date: "10.10.2003  16:04",
@@ -90,8 +90,8 @@ window.MAILBOX_DATA = {
       id: "m-005",
       folder: "inbox",
       from: "Матео Ріос",
-      email: "mrios@umbrella-eu.net",
-      to: "Марта Веласкес <m.velasquez@umbrella-eu.net>",
+      email: "mrios@val04.es",
+      to: "Марта Веласкес <m.velasquez@val04.es>",
       subject: "камера 12",
       date: "09.10.2003  03:12",
       timestamp: "2003-10-09T03:12:00",
@@ -107,8 +107,8 @@ window.MAILBOX_DATA = {
       id: "m-006",
       folder: "sent",
       from: "Марта Веласкес",
-      email: "m.velasquez@umbrella-eu.net",
-      to: "Естебан Салазар <esalazar@umbrella-eu.net>",
+      email: "m.velasquez@val04.es",
+      to: "Естебан Салазар <esalazar@val04.es>",
       subject: "RE: зразки з рівня B4",
       date: "11.10.2003  22:38",
       timestamp: "2003-10-11T22:38:00",
@@ -122,9 +122,79 @@ window.MAILBOX_DATA = {
     },
     {
       id: "m-007",
+      folder: "sent",
+      from: "Марта Веласкес",
+      email: "m.velasquez@val04.es",
+      to: "Даніель Варґас <dvargas@proteccion-iberia.es>",
+      subject: "Пропуск до службового входу",
+      date: "10.10.2003  17:26",
+      timestamp: "2003-10-10T17:26:00",
+      preview: "Сеньйоре Варґас, ваш тимчасовий пропуск активовано до завершення супроводу EW...",
+      unread: false,
+      flagged: false,
+      attachment: "VAL04_тимчасовий_доступ.vcf",
+      body: [
+        "Сеньйоре Варґас, ваш тимчасовий пропуск активовано до завершення супроводу EW.",
+        "Картка відкриває службовий вхід, гараж і коридор B1. Рівні B2–B4 залишаються закритими. Якщо індикатор стане червоним, не прикладайте картку вдруге — телефонуйте мені напряму.",
+        "Марта Веласкес, адміністратор доступу VAL-04"
+      ]
+    },
+    {
+      id: "m-009",
+      folder: "sent",
+      from: "Марта Веласкес",
+      email: "m.velasquez@val04.es",
+      to: "А. Ндіпа <andipa@transequator-africa.org>",
+      subject: "Майданчик K-12: свердловина",
+      date: "08.10.2003  14:09",
+      timestamp: "2003-10-08T14:09:00",
+      preview: "Погоджую резервування підземної свердловини в автономній зоні Кіджуджу...",
+      unread: false,
+      flagged: false,
+      body: [
+        "Погоджую резервування підземної свердловини в автономній зоні Кіджуджу. У документах об’єкт має проходити як геологічна розвідка.",
+        "Місцевих працівників не допускати нижче другого ярусу. Контейнери прибудуть морем після завершення іспанського етапу."
+      ]
+    },
+    {
+      id: "m-010",
+      folder: "sent",
+      from: "Марта Веласкес",
+      email: "m.velasquez@val04.es",
+      to: "Д-р Сіммонс <dsimmons@family-office.us>",
+      subject: "Польове сховище: університетський округ",
+      date: "06.10.2003  09:32",
+      timestamp: "2003-10-06T09:32:00",
+      preview: "Архів прийняв вашу пропозицію щодо тунелів під Толл-Оукс...",
+      unread: false,
+      flagged: false,
+      body: [
+        "Архів прийняв вашу пропозицію щодо тунелів під Толл-Оукс. Близькість університету не вказувати в транспортних накладних.",
+        "Окремий пакет для східного партнера позначено «Ляншань». Його не слід відправляти до отримання підтвердження від Родини."
+      ]
+    },
+    {
+      id: "m-011",
+      folder: "sent",
+      from: "Марта Веласкес",
+      email: "m.velasquez@val04.es",
+      to: "Евелін Б. <e.baker@dulvey-recovery.us>",
+      subject: "Зразок E: резервне зберігання",
+      date: "03.10.2003  18:14",
+      timestamp: "2003-10-03T18:14:00",
+      preview: "Вологий клімат Луїзіани придатний, але маєток біля Далві не є сертифікованим об’єктом...",
+      unread: false,
+      flagged: true,
+      body: [
+        "Вологий клімат Луїзіани придатний, але маєток біля Далві не є сертифікованим об’єктом. Не зберігайте матеріал у житловому будинку.",
+        "Якщо перевезення все ж відбудеться, використовуйте судно без пасажирського маніфесту й уникайте контакту з родиною власника."
+      ]
+    },
+    {
+      id: "m-012",
       folder: "drafts",
       from: "Марта Веласкес",
-      email: "m.velasquez@umbrella-eu.net",
+      email: "m.velasquez@val04.es",
       to: "Лукас Ортеґа <l.ortega@valdescurro.es>",
       subject: "Їдь із міста",
       date: "11.10.2003  23:46",
@@ -138,11 +208,11 @@ window.MAILBOX_DATA = {
       ]
     },
     {
-      id: "m-008",
+      id: "m-013",
       folder: "trash",
       from: "Невідомий відправник",
       email: "return-path@localhost",
-      to: "m.velasquez@umbrella-eu.net",
+      to: "m.velasquez@val04.es",
       subject: "воно пам'ятає тебе",
       date: "11.10.2003  23:33",
       timestamp: "2003-10-11T23:33:00",
