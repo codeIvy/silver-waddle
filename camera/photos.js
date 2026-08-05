@@ -56,10 +56,10 @@ window.CAMERA_DATA = {
     },
     {
       id: "IMG_0046",
-      src: "images/IMG_0046-dr-salvador.jpg",
+      src: "images/IMG_0046-chainsaw-fragment-v2.jpg",
       date: "11.10.2003",
       time: "18:04",
-      caption: "Останній збережений кадр — озброєний чоловік",
+      caption: "Останній збережений кадр — пошкоджений фрагмент",
       placeholder: "НЕВІДОМИЙ ОБ'ЄКТ",
       tone: "attack"
     }
