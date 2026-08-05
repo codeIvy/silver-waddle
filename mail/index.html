@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#153f85">
+  <title>Umbrella WebMail 4.0</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <main class="window">
+    <header class="titlebar">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <span class="window-title">Umbrella WebMail 4.0 — Вхідні</span>
+      <div class="window-controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></div>
+    </header>
+
+    <nav class="menubar" aria-label="Головне меню">
+      <a href="../index.html"><u>Ф</u>айл</a><button><u>Р</u>едагувати</button><button><u>В</u>игляд</button><button><u>Д</u>овідка</button>
+    </nav>
+
+    <div class="toolbar" aria-label="Панель інструментів">
+      <button class="tool" data-action="offline"><span class="tool-icon compose">✉</span><span>Створити</span></button>
+      <button class="tool" data-action="offline"><span class="tool-icon reply">↩</span><span>Відповісти</span></button>
+      <button class="tool" data-action="offline"><span class="tool-icon forward">➜</span><span>Переслати</span></button>
+      <span class="separator"></span>
+      <button class="tool" data-action="delete"><span class="tool-icon delete">×</span><span>Видалити</span></button>
+      <button class="tool" data-action="offline"><span class="tool-icon sync">↻</span><span>Надісл./отрим.</span></button>
+      <span class="toolbar-logo">UMBRELLA<br><small>EUROPE NETWORK</small></span>
+    </div>
+
+    <div class="addressbar"><span>Адреса</span><div>📁 <b id="address-label">Вхідні</b></div><button>Перейти</button></div>
+
+    <section class="workspace">
+      <aside class="folders">
+        <div class="pane-heading">Папки</div>
+        <div class="account"><span class="computer">▣</span><strong>Локальні папки</strong></div>
+        <nav id="folder-list" aria-label="Поштові папки"></nav>
+        <div class="quota">
+          <b>Поштова скринька</b>
+          <div class="meter"><span></span></div>
+          <small>Використано 4,73 МБ із 5 МБ</small>
+        </div>
+      </aside>
+
+      <section class="mail-area">
+        <div class="inbox-heading"><span id="folder-title">Вхідні</span><small id="message-total"></small></div>
+        <div class="message-list-wrap">
+          <table class="message-list">
+            <thead><tr><th class="state-col"></th><th>Від</th><th>Тема</th><th>Отримано</th></tr></thead>
+            <tbody id="message-list"></tbody>
+          </table>
+        </div>
+
+        <article class="reader" id="reader" aria-live="polite">
+          <div class="reader-empty">Оберіть повідомлення, щоб прочитати його.</div>
+        </article>
+      </section>
+    </section>
+
+    <footer class="statusbar"><span id="status-text">Готово</span><span class="connection"><i></i> Автономний режим</span><span class="grip">◢</span></footer>
+  </main>
+
+  <div class="modal" id="offline-modal" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+      <div class="dialog-title"><span id="dialog-title">Umbrella WebMail</span><button data-close>×</button></div>
+      <div class="dialog-body"><span class="warning">!</span><div><b>Немає зв'язку із сервером.</b><p>Перевірте мережевий кабель або зверніться до системного адміністратора.</p></div></div>
+      <div class="dialog-actions"><button data-close autofocus>OK</button></div>
+    </div>
+  </div>
+
+  <script src="messages.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

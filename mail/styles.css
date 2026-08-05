@@ -1,0 +1,51 @@
+:root { --navy:#133b7a; --blue:#24569a; --line:#8192aa; --paper:#fff; --panel:#eef3fa; --chrome:#ece9d8; --selected:#0a3c8c; }
+* { box-sizing:border-box; }
+html,body { min-height:100%; margin:0; }
+body { background:#174c89; color:#111; font:12px Tahoma, Verdana, Arial, sans-serif; overflow:hidden; }
+button,a { font:inherit; }
+button { color:#111; }
+.noise { position:fixed; inset:0; pointer-events:none; opacity:.08; background-image:repeating-linear-gradient(0deg,transparent 0,transparent 2px,#fff 3px); }
+.window { position:relative; width:100vw; height:100vh; min-width:680px; min-height:480px; display:flex; flex-direction:column; background:var(--chrome); border:3px solid #aac4e9; box-shadow:inset 0 0 0 1px #15428b; }
+.titlebar { height:30px; flex:none; display:flex; align-items:center; padding:3px 4px; color:#fff; background:linear-gradient(90deg,#082f77 0,#1268c7 58%,#8bb9ee 100%); font-weight:bold; text-shadow:1px 1px #003; }
+.brand-mark { width:23px; height:23px; margin-right:6px; display:grid; grid-template-columns:1fr 1fr; transform:rotate(45deg); overflow:hidden; border-radius:50%; background:#fff; border:1px solid #ddd; }
+.brand-mark span:nth-child(1),.brand-mark span:nth-child(4){background:#ad1320}.brand-mark span:nth-child(2),.brand-mark span:nth-child(3){background:#eee}
+.window-title { flex:1; }
+.window-controls { display:flex; gap:2px; }
+.window-controls span { display:grid; place-items:center; width:23px; height:21px; border:1px solid #fff; border-radius:2px; background:linear-gradient(#72a7df,#1c5ea8); box-shadow:inset -1px -1px #174982; font:bold 14px Arial; }
+.window-controls span:last-child { background:linear-gradient(#e79a83,#b52a11); }
+.menubar { height:24px; display:flex; align-items:center; gap:3px; padding:0 5px; border-bottom:1px solid #aaa; background:var(--chrome); }
+.menubar button,.menubar a { border:0; background:transparent; padding:3px 7px; color:#111; text-decoration:none; }
+.menubar button:hover,.menubar a:hover { background:#1f5ba5; color:#fff; }
+.toolbar { min-height:58px; display:flex; align-items:center; padding:3px 7px; border-bottom:1px solid #999; background:linear-gradient(90deg,#f6f4eb,#e6e2cf); }
+.tool { min-width:58px; height:50px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border:1px solid transparent; background:transparent; }
+.tool:hover { border-color:#b4a86a; background:#fff7d3; }
+.tool-icon { font:bold 25px Georgia; line-height:24px; color:#245390; text-shadow:1px 1px #fff; }
+.tool-icon.delete { color:#c01818; }.tool-icon.sync{color:#19823d}.separator{height:42px;border-left:1px solid #aaa;border-right:1px solid #fff;margin:0 5px}
+.toolbar-logo { margin-left:auto; width:126px; color:#8b111d; font:bold italic 16px Georgia; text-align:center; letter-spacing:1px; }.toolbar-logo small{font:8px Tahoma;color:#333;letter-spacing:2px}
+.addressbar { height:27px; flex:none; display:flex; gap:5px; align-items:center; padding:2px 5px; border-bottom:1px solid #8490a0; }
+.addressbar>span { color:#555; }.addressbar>div { flex:1; height:21px; padding:2px 6px; background:#fff; border:1px solid #7f9db9; }.addressbar button{height:22px;border:1px solid #7f9db9;background:linear-gradient(#fff,#d9e5f2)}
+.workspace { min-height:0; flex:1; display:grid; grid-template-columns:210px 1fr; gap:3px; padding:3px; background:#8b9bad; }
+.folders,.mail-area { min-height:0; background:#fff; border:1px solid #526783; }
+.folders { position:relative; display:flex; flex-direction:column; background:#f1f5fb; }
+.pane-heading,.inbox-heading { min-height:25px; padding:5px 8px; color:#fff; background:linear-gradient(#527cb8,#244d89); font-weight:bold; }
+.account { padding:9px 10px 5px; }.computer{color:#1b5c9d;margin-right:5px}
+#folder-list { padding:2px 7px; }
+.folder { width:100%; display:flex; align-items:center; gap:6px; padding:5px 8px 5px 22px; border:1px solid transparent; background:transparent; text-align:left; }
+.folder:hover { background:#dbe8f8; }.folder.active{color:#fff;background:#316ac5;border-color:#174b9b}.folder .count{margin-left:auto}.folder-icon{font-size:15px}
+.quota { margin:auto 9px 10px; padding-top:10px; border-top:1px solid #bbb; color:#444; }.meter{height:10px;margin:6px 0 3px;border:1px solid #777;background:#fff;padding:1px}.meter span{display:block;width:94.6%;height:100%;background:#c82929}
+.mail-area { display:grid; grid-template-rows:26px minmax(140px,42%) minmax(160px,1fr); }
+.inbox-heading { display:flex; justify-content:space-between; }.inbox-heading small{font-weight:normal}
+.message-list-wrap { overflow:auto; border-bottom:5px ridge #d4d0c8; background:#fff; }
+.message-list { width:100%; border-collapse:collapse; table-layout:fixed; font-size:12px; }
+.message-list th { position:sticky; top:0; z-index:2; height:22px; padding:3px 7px; border-right:1px solid #aaa; border-bottom:1px solid #888; background:linear-gradient(#fff,#d8d8d8); text-align:left; font-weight:normal; }
+.message-list th:nth-child(2){width:25%}.message-list th:nth-child(3){width:auto}.message-list th:nth-child(4){width:145px}.message-list .state-col{width:42px}
+.message-list td { height:22px; padding:3px 7px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; border-bottom:1px solid #eee; }
+.message-list tr { cursor:default; }.message-list tr:hover{background:#e8f1ff}.message-list tr.selected{background:var(--selected);color:#fff}.message-list tr.unread{font-weight:bold}.state-icons{color:#c02020;text-align:center}
+.reader { min-height:0; overflow:auto; background:#fff; }
+.reader-empty { display:grid; place-items:center; height:100%; color:#777; }
+.message-head { padding:10px 14px 8px; border-bottom:1px solid #aaa; background:linear-gradient(#fff,#edf2f8); }
+.message-subject { margin:0 0 8px; color:#133b7a; font-size:18px; }.header-row{display:flex;margin:3px 0}.header-row b{width:48px;color:#555}.attachment{display:inline-block;margin:8px 0 0 48px;padding:4px 8px;border:1px solid #aaa;background:#fff;color:#174d8c}
+.message-body { max-width:760px; padding:18px 22px; font:14px/1.55 Arial,sans-serif; }.message-body p{margin:0 0 15px}.security-note{margin-top:25px;padding-top:8px;border-top:1px solid #ccc;color:#777;font:10px Tahoma}
+.statusbar { height:24px; flex:none; display:flex; align-items:center; padding:2px 5px; gap:10px; border-top:1px solid #fff; background:var(--chrome); box-shadow:inset 0 1px #aaa; }.statusbar>span:first-child{flex:1}.connection{border-left:1px solid #aaa;padding-left:10px}.connection i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#c71919;box-shadow:0 0 3px #b00}.grip{color:#777}
+.modal[hidden]{display:none}.modal{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.18);z-index:10}.dialog{width:380px;border:3px solid #1756a0;border-radius:6px 6px 2px 2px;background:var(--chrome);box-shadow:6px 8px 18px #0008}.dialog-title{display:flex;justify-content:space-between;padding:4px 5px;color:#fff;font-weight:bold;background:linear-gradient(90deg,#0b3c88,#6aa5e0)}.dialog-title button{width:22px;color:#fff;border:1px solid #fff;background:#be3b25}.dialog-body{display:flex;gap:15px;align-items:flex-start;padding:22px}.dialog-body p{margin:6px 0}.warning{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;color:#fff;background:#e0a000;font:bold 26px Arial}.dialog-actions{text-align:right;padding:0 15px 12px}.dialog-actions button{min-width:75px;padding:3px}
+@media(max-width:700px){body{overflow:auto}.window{min-width:0;height:100dvh;min-height:520px}.workspace{grid-template-columns:1fr}.folders{display:none}.toolbar-logo,.menubar{display:none}.toolbar{min-height:48px}.tool{min-width:50px;height:42px;font-size:10px}.tool-icon{font-size:20px}.mail-area{grid-template-rows:26px minmax(165px,43%) minmax(180px,1fr)}.message-list th:nth-child(2){width:34%}.message-list th:nth-child(4),.message-list td:nth-child(4){display:none}.message-list .state-col{width:32px}.addressbar{font-size:11px}.message-head{padding:8px}.message-subject{font-size:16px}.message-body{padding:14px}.window-controls span{width:20px}.dialog{width:calc(100% - 28px)}}
