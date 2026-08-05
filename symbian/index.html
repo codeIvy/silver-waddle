@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#25282a">
+  <title>Nokia — Menu</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="phone" aria-label="Symbian phone simulator">
+    <div class="speaker"><span></span><b>NOKIA</b><i></i></div>
+    <section class="screen">
+      <header class="status">
+        <span class="signal" aria-label="Signal: two bars"><i></i><i></i><i></i><i></i></span>
+        <span class="network">UMBRELLA</span>
+        <span class="battery" aria-label="Battery low"><i></i></span>
+      </header>
+      <div class="app-view" id="app-view"></div>
+      <footer class="softkeys">
+        <button id="left-softkey">Options</button>
+        <span id="screen-title">Menu</span>
+        <button id="right-softkey">Exit</button>
+      </footer>
+    </section>
+    <section class="hardware" aria-hidden="true">
+      <div class="top-keys"><span></span><b></b><span></span></div>
+      <div class="nav-key"><i>▲</i><i>◀</i><em></em><i>▶</i><i>▼</i></div>
+      <div class="call-keys"><span>●</span><span>●</span></div>
+      <div class="keypad">
+        <b>1<small>.,?</small></b><b>2<small>abc</small></b><b>3<small>def</small></b>
+        <b>4<small>ghi</small></b><b>5<small>jkl</small></b><b>6<small>mno</small></b>
+        <b>7<small>pqrs</small></b><b>8<small>tuv</small></b><b>9<small>wxyz</small></b>
+        <b>*<small>+</small></b><b>0<small>space</small></b><b>#<small>⇧</small></b>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
