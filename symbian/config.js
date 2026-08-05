@@ -6,72 +6,79 @@
  */
 window.SYMBIAN_DATA = {
   owner: "M. Velasquez",
+  password: "каталіна",
   mapsUrl: "",
+  calls: [
+    { direction: "outgoing", name: "Лукас Ортеґа", number: "+34 976 55 01 18", date: "11.10.2003", time: "22:51", duration: "00:43" },
+    { direction: "outgoing", name: "Охорона VAL-04", number: "+34 974 17 04 00", date: "11.10.2003", time: "22:39", duration: "Без відповіді" },
+    { direction: "incoming", name: "Анонімний абонент", number: "Номер приховано", date: "11.10.2003", time: "03:17", duration: "00:08" },
+    { direction: "outgoing", name: "Д-р Е. Салазар", number: "+34 91 555 42 17", date: "10.10.2003", time: "18:06", duration: "02:14" }
+  ],
   messages: [
     {
       id: "s60-001",
-      from: "E. Salazar",
+      from: "Е. Салазар",
       address: "esalazar@umbrella-eu.net",
-      subject: "RE: samples from B4",
-      date: "11/10/2003",
+      subject: "RE: зразки з B4",
+      date: "11.10.2003",
       time: "23:41",
       unread: true,
       body: [
-        "Marta, do not open the container. The seal must remain intact until the Madrid team arrives.",
-        "The culture reacts to heat and sound. If the power fails, do not go to the backup generator.",
-        "Lock the laboratory from the inside and wait."
+        "Марто, не відкривай контейнер. Пломба має залишатися цілою до прибуття групи з Мадрида.",
+        "Культура реагує на тепло і звук. Якщо зникне живлення, не йди до резервного генератора.",
+        "Замкни лабораторію зсередини й чекай."
       ]
     },
     {
       id: "s60-002",
-      from: "SECURITY SYSTEM",
+      from: "СИСТЕМА БЕЗПЕКИ",
       address: "security-daemon@umbrella-eu.net",
-      subject: "[URGENT] Seal breach",
-      date: "11/10/2003",
+      subject: "[ТЕРМІНОВО] Порушення герметичності",
+      date: "11.10.2003",
       time: "23:17",
       unread: true,
       body: [
-        "A containment breach has been detected in laboratory sector B.",
-        "All personnel must remain at their stations. Do not use the lifts. Do not attempt to leave the facility."
+        "У лабораторному секторі B зафіксовано порушення герметичності.",
+        "Увесь персонал має залишатися на робочих місцях. Не користуйтеся ліфтами. Не намагайтеся залишити комплекс."
       ]
     },
     {
       id: "s60-003",
-      from: "Lucas Ortega",
+      from: "Лукас Ортеґа",
       address: "l.ortega@valdescurro.es",
-      subject: "Can you hear the sirens?",
-      date: "11/10/2003",
+      subject: "Ти чуєш сирени?",
+      date: "11.10.2003",
       time: "22:56",
       unread: true,
       body: [
-        "Mum says a convoy of ambulances is coming from your side of the valley, but none of them have plates.",
-        "The power is out in town. Call me as soon as you can."
+        "Мама каже, що з вашого боку долини їде колона швидких, але жодна з них не має номерів.",
+        "У місті зникло світло. Подзвони мені, щойно зможеш."
       ]
     },
     {
       id: "s60-004",
-      from: "VAL-04 Administration",
+      from: "Адміністрація VAL-04",
       address: "admin@umbrella-eu.net",
-      subject: "Scheduled inspection postponed",
-      date: "10/10/2003",
+      subject: "Планову перевірку перенесено",
+      date: "10.10.2003",
       time: "16:04",
       unread: false,
       body: [
-        "Inspection of sectors B3 through B5 has been postponed indefinitely due to technical maintenance.",
-        "Discussion of internal procedures outside the facility violates section 14 of your non-disclosure agreement."
+        "Перевірку секторів B3–B5 перенесено на невизначений термін через технічне обслуговування.",
+        "Обговорення внутрішніх процедур за межами комплексу порушує пункт 14 вашої угоди про нерозголошення."
       ]
     },
     {
       id: "s60-005",
-      from: "Mateo Rios",
+      from: "Матео Ріос",
       address: "mrios@umbrella-eu.net",
-      subject: "camera 12",
-      date: "09/10/2003",
+      subject: "камера 12",
+      date: "09.10.2003",
       time: "03:12",
       unread: false,
       body: [
-        "The corridor is empty on the recording, but the sensor counts seven people.",
-        "Every night the number increases by one. Check camera 12, archive 02:47:19."
+        "На записі коридор порожній, але датчик рахує сім людей.",
+        "Щоночі число збільшується на один. Перевір камеру 12, архів 02:47:19."
       ]
     }
   ]
