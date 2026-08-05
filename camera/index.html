@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#181a19">
+  <title>Знайдена цифрова камера</title>
+  <link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+  <main class="camera" aria-label="Пошкоджена цифрова камера">
+    <header class="camera-top">
+      <div class="viewfinder"><i></i></div>
+      <div class="brand"><small>DIGITAL</small><b>IXUS</b><span>400</span></div>
+      <div class="mode-dial"><i>AUTO</i></div>
+    </header>
+
+    <section class="camera-back">
+      <aside class="left-controls" aria-hidden="true">
+        <button>MENU</button><button>DISP.</button>
+        <span class="speaker">••<br>•••</span>
+      </aside>
+
+      <section class="lcd-shell">
+        <div class="lcd" id="lcd">
+          <div class="photo-stage" id="photo-stage"></div>
+          <div class="lcd-status top"><span>▶</span><span id="photo-number"></span><span class="battery"><i></i></span></div>
+          <div class="lcd-status bottom"><span id="photo-date"></span><span id="photo-time"></span><span>3.2M</span></div>
+          <div class="cracks" aria-hidden="true">
+            <i class="impact"></i><i class="crack c1"></i><i class="crack c2"></i><i class="crack c3"></i><i class="crack c4"></i><i class="crack c5"></i><i class="crack c6"></i>
+          </div>
+          <div class="dead-pixels" aria-hidden="true"></div>
+        </div>
+        <div class="screen-label">1.5&quot; TFT COLOR LCD</div>
+      </section>
+
+      <aside class="right-controls">
+        <button class="zoom" data-action="zoom">W&nbsp;&nbsp; T</button>
+        <div class="dpad">
+          <button data-action="prev" aria-label="Попереднє фото">◀</button>
+          <button data-action="info" aria-label="Інформація">SET</button>
+          <button data-action="next" aria-label="Наступне фото">▶</button>
+        </div>
+        <button class="trash" data-action="locked">⌫</button>
+      </aside>
+    </section>
+
+    <footer class="camera-bottom">
+      <div class="card-door"><span>CF CARD</span></div>
+      <div class="evidence-tag">R-17 / РЕЧОВИЙ ДОКАЗ</div>
+    </footer>
+
+    <div class="scratch-marks" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="blood-smear" aria-hidden="true"><i></i></div>
+  </main>
+
+  <section class="caption-panel" aria-live="polite">
+    <b id="caption-title"></b>
+    <span id="caption-text"></span>
+    <small>Користуйтеся кнопками ◀ ▶ на камері або клавішами зі стрілками.</small>
+  </section>
+
+  <div class="notice" id="notice" hidden></div>
+  <script src="photos.js?v=1"></script>
+  <script src="app.js?v=1"></script>
+</body>
+</html>
