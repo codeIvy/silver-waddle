@@ -14,7 +14,7 @@
 
   function lock(){
     screen="locked";setChrome("Безпека","","Екстрено");
-    view.innerHTML=`<form class="lock-screen" id="unlock-form"><div class="lock-title">Систему заблоковано</div><div class="lock-icon">⚿</div><p>Введіть пароль для доступу до пристрою.</p><label for="password-input">Пароль:</label><input id="password-input" name="password" type="password" autocomplete="off" autocapitalize="none" spellcheck="false"><div class="lock-error" id="lock-error" aria-live="polite"></div><button type="submit">OK</button><small>У разі знахідки повернути:<br>${esc(data.owner)} · VAL-04</small></form>`;
+    view.innerHTML=`<form class="lock-screen" id="unlock-form"><div class="lock-title">Систему заблоковано</div><div class="lock-icon">⚿</div><p>Введіть пароль для доступу до пристрою.</p><label for="password-input">Пароль:</label><input id="password-input" name="password" type="password" autocomplete="off" autocapitalize="none" spellcheck="false"><div class="lock-error" id="lock-error" aria-live="polite"></div><button type="submit">OK</button><small>У разі знахідки повернути:<br>${esc(data.owner)} · ${esc(data.organization)}</small></form>`;
     setTimeout(()=>document.querySelector("#password-input")?.focus(),50);
   }
 
@@ -41,7 +41,7 @@
       view.innerHTML='<div class="dialog-view"><div class="dialog-box"><div class="dialog-icon">⌖</div><h2>Посилання не налаштовано</h2><p>Адресу карти не знайдено.</p></div></div>';
       return;
     }
-    view.innerHTML=`<div class="map-view" id="map-view"><iframe class="map-frame" src="${esc(data.mapsEmbedUrl)}" title="Карта операції R-17" loading="eager" allowfullscreen></iframe><button class="map-fullscreen" data-map-fullscreen>⛶ На весь екран</button></div>`;
+    view.innerHTML=`<div class="map-view" id="map-view"><iframe class="map-frame" src="${esc(data.mapsEmbedUrl)}" title="Особисті позначки власника" loading="eager" allowfullscreen></iframe><button class="map-fullscreen" data-map-fullscreen>⛶ На весь екран</button></div>`;
   }
   function back(){if(screen==="locked")showToast("Екстрені виклики недоступні");else if(screen==="message")inbox();else if(screen!=="home")home();else lock()}
   view.addEventListener("submit",event=>{if(event.target.id!=="unlock-form")return;event.preventDefault();const input=document.querySelector("#password-input");if(input.value.trim().toLowerCase()===String(data.password).toLowerCase())home();else{document.querySelector("#lock-error").textContent="Неправильний пароль";input.value="";input.focus()}});
